@@ -1,6 +1,6 @@
-import Button from "@/components/ui/button";
 import { ArrowLeft, ArrowRight } from "@/constants/icons";
 import { Dispatch, SetStateAction } from "react";
+import { Button } from "../ui/button";
 
 type Props = {
   currentPage: number;

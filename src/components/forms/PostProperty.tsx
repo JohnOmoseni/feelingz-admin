@@ -50,6 +50,7 @@ const PostProperty = ({
   const [isLoading, setIsLoading] = useState(false);
   const [dynamicFields, setDynamicFields] = useState<DynamicFieldType[]>([]);
   const [selectedState, setSelectedState] = useState("");
+  const [hasImageUploaded, setHasImageUploaded] = useState(false);
 
   const postLisitingMutuation = usePostListing();
 
@@ -57,6 +58,11 @@ const PostProperty = ({
   const { data: lgas } = useGetStateLGAs({ state_id: selectedState });
 
   const onSubmit = async (values: InferType<typeof PostSchema>) => {
+    if (!hasImageUploaded) {
+      toast.info("Please upload at least 2 images for the ad");
+      return;
+    }
+
     setIsLoading(true);
 
     const dynamicFieldsObj = dynamicFields.reduce((acc, key) => {
@@ -411,28 +417,17 @@ const PostProperty = ({
               <FormFileUpload
                 title="Upload Images (At least 5 images)"
                 name="mediaImage"
+                setHasImageUploaded={setHasImageUploaded}
+                images={
+                  Array.isArray(data?.media) && data?.media?.length > 0
+                    ? data?.media?.map((file: any) => file?.file_url)
+                    : []
+                }
                 onFileChange={(files) => setFiles(files)}
               />
             )}
           />
         </div>
-
-        {/* <div className="mt-2">
-          <CustomFormField
-            fieldType={FormFieldType.SKELETON}
-            name="mediaImage"
-            errors={errors}
-            onBlur={handleBlur}
-            touched={touched}
-            renderSkeleton={() => (
-              <TestFormFileUpload
-                title="Upload Images (At least 5 images)"
-                name="mediaImage"
-                onFileChange={(files) => setFiles(files)}
-              />
-            )}
-          />
-        </div> */}
       </div>
     </FormWrapper>
   );

@@ -1,37 +1,44 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { FileUploadIcon } from "@/constants/icons";
+import { FileUploadIcon, Remove } from "@/constants/icons";
 import { cn } from "@/lib/utils";
-import { ChangeEvent, useState } from "react";
+import { uploadChunks } from "@/server/actions/uploadChunks";
+import { ChangeEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
-import { MdCancel } from "react-icons/md";
-import { uploadChunks } from "@/hooks/usePost";
 
 type Props = {
   title?: string;
-  value?: string[];
+  images?: any;
   name?: string;
   accept?: string;
   required?: boolean;
   hideSubtitle?: boolean;
+  setHasImageUploaded?: any;
   onFileChange?: (files: string[]) => void;
 };
 
 function FormFileUpload({
   title,
+  images,
   name,
   accept = "image/png, image/jpeg, image/jpg",
   required,
   hideSubtitle,
   onFileChange,
+  setHasImageUploaded,
 }: Props) {
   const [files, setFiles] = useState<File[]>([]);
-  const [preview, setPreview] = useState<string[]>([]);
-  const [uploadProgress, setUploadProgress] = useState<Record<number, number>>({});
+  const [preview, setPreview] = useState<string[]>(images);
+  const [_uploadProgress, setUploadProgress] = useState<Record<number, number>>({});
   const [uploadStatus, setUploadStatus] = useState<Record<number, string>>({});
-  const [hasImageUpload, setHasImageUpload] = useState(false);
 
-  const MIN_SIZE = 5 * 1024 * 1024; // 5 MB
+  useEffect(() => {
+    if (images && images?.length > 0) {
+      setPreview(images);
+      onFileChange?.(images);
+      images?.length >= 2 && setHasImageUploaded(true); // Set flag to true if images are provided
+    }
+  }, [images]);
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = event.target.files;
@@ -77,10 +84,7 @@ function FormFileUpload({
         statusMap[i] = "Uploaded";
         res && imageURLS.push(res);
 
-        // Check if the upload count meets the threshold (5 successful uploads)
-        if (imageURLS.length >= 5) {
-          setHasImageUpload(true);
-        }
+        setUploadStatus({ ...statusMap });
 
         toast.success(`File ${file.name} uploaded successfully.`);
       } catch (error) {
@@ -90,7 +94,11 @@ function FormFileUpload({
       }
     }
 
-    console.log("[IMAGE URLS", imageURLS);
+    console.log("[IMAGE URLS]", imageURLS);
+
+    if (imageURLS.length >= 2) {
+      setHasImageUploaded(true);
+    }
 
     onFileChange?.(imageURLS);
   };
@@ -113,8 +121,8 @@ function FormFileUpload({
           {title}
         </Label>
 
-        <div className="grid gap-4 grid-cols-1 mt-">
-          {files.length > 0 && (
+        <div className="grid gap-4 grid-cols-1">
+          {preview?.length > 0 && (
             <div className="grid grid-cols-[repeat(auto-fit,_minmax(4rem,_6rem))] gap-x-4 gap-y-8">
               {preview.map((fileUrl, index) => (
                 <div key={index} className="relative w-24 h-28">
@@ -128,11 +136,14 @@ function FormFileUpload({
                     onClick={() => handleRemoveFile(fileUrl)}
                     className="absolute top-1 right-1 bg-background rounded-full"
                   >
-                    <MdCancel className="text-secondary size-5" />
+                    <Remove className="text-secondary size-5" />
                   </button>
-                  <div className="mt-1">
-                    <p className="text-xs">{uploadStatus[index] || "Pending..."}</p>
-                  </div>
+
+                  {files?.length > 0 && (
+                    <div className="my-1">
+                      <p className="text-xs">{uploadStatus[index] || "Pending..."}</p>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -141,7 +152,7 @@ function FormFileUpload({
           <div
             className={cn(
               "w-full flex-column items-center justify-center gap-2 border border-border  rounded-md overflow-hidden border-dashed bg-background-100 hover:border-secondary-100",
-              files?.length === 0 ? "max-w-[60%]" : "mt-5"
+              preview?.length === 0 ? "sm:max-w-[60%]" : "mt-4"
             )}
           >
             <Input
@@ -153,26 +164,28 @@ function FormFileUpload({
               className="hidden"
             />
             <Label htmlFor={name} className="w-full">
-              <div className="flex-column py-4 items-center">
+              <div className="flex-column p-4 !items-center">
                 <div className="row-flex-start gap-2">
                   <FileUploadIcon className="size-16 stroke-secondary-text" />
                 </div>
 
                 {!hideSubtitle && (
-                  <p className="text-sm mt-3 tracking-wide opacity-80 capitalize">
+                  <p className="text-sm mt-3 tracking-wide opacity-80 capitalize text-center">
                     JPEG, PNG, JPG, etc.
                   </p>
                 )}
 
-                <p className="text-xs text-secondary font-medium mt-1">click to browse.</p>
+                <p className="text-xs text-secondary text-center font-medium mt-1">
+                  click to browse.
+                </p>
               </div>
             </Label>
           </div>
         </div>
 
-        {hasImageUpload && (
-          <p className="mt-3 text-green-500">At least 5 images uploaded successfully.</p>
-        )}
+        {/* {hasImageUploaded && (
+          <p className="mt-3 text-green-500 text-xs">At least 2 images uploaded successfully.</p>
+        )} */}
       </div>
     </div>
   );

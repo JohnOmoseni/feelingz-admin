@@ -1,10 +1,10 @@
 import { ChangeEvent, useState } from "react";
-import { profile, UserAvatar } from "@/constants/icons";
+import { UserAvatar } from "@/constants/icons";
 import { toast } from "sonner";
 import { convertFileToUrl } from "@/lib";
 import { Input } from "@/components/ui/input";
-import Button from "@/components/reuseables/CustomButton";
 import { Label } from "@/components/ui/label";
+import Button from "@/components/reuseables/CustomButton";
 
 function ProfilePic() {
   const [_file, setFile] = useState<File | null>(null);

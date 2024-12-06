@@ -9,7 +9,7 @@ function Settings() {
   return (
     <>
       <SectionWrapper headerTitle={"Settings"}>
-        <div className="flex-column md:grid grid-cols-[1fr_minmax(200px,_300px)] gap-7">
+        <div className="flex-column min-[950px]:grid grid-cols-[1fr_minmax(200px,_300px)] gap-7">
           <div className="flex-column card !px-0">
             <h3 className="border-b pb-3 border-border px-4">Personal Information</h3>
 

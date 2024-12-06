@@ -25,6 +25,7 @@ function DashboardTableActions({ data }: { data?: any }) {
     2: () => setOpenModal("details"),
   };
 
+  // @ts-ignore
   const handleItemClick = async (
     idx: number,
     closeDropdown: () => void,
@@ -65,7 +66,7 @@ function DashboardTableActions({ data }: { data?: any }) {
         renderItem={(item, index) => {
           return (
             <>
-              <div key={index} onClick={(event) => null}>
+              <div key={index} onClick={() => null}>
                 <div className="row-flex-start w-full gap-2 cursor-pointer">
                   {item?.icon && <item.icon className={cn("size-4")} />}
                   <span className={cn("flex-1 leading-4 text-sm")}>{item?.label}</span>
@@ -127,7 +128,7 @@ const Options = () => {
       renderItem={(item, index) => {
         return (
           <>
-            <div key={index} onClick={(event) => null}>
+            <div key={index} onClick={() => null}>
               <div className="row-flex-start w-full gap-2 cursor-pointer">
                 {item?.icon && <item.icon className={cn("size-4")} />}
                 <span className={cn("flex-1 leading-4 text-sm")}>{item?.label}</span>

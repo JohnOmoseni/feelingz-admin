@@ -180,7 +180,6 @@ const CategoryForm = ({ data, type, closeModal }: CategoryProps) => {
                     <FormFileUpload
                       title="Add Images (Optional)"
                       name="mediaImage"
-                      sizeLimit={1000}
                       onFileChange={(file) => setFieldValue("mediaImage", file)}
                     />
                   )}

@@ -22,8 +22,6 @@ import VehicleListing from "./app/dashboard/listing/vehicle-listing";
 import Users from "./app/dashboard/users/page";
 import Complaints from "./app/dashboard/complaints/page";
 import Category from "./app/dashboard/category/page";
-import Analytics from "./app/dashboard/analytics/page";
-import Messages from "./app/dashboard/messages/page";
 import Settings from "./app/dashboard/settings/page";
 
 const AppRouter = () => {
@@ -77,9 +75,9 @@ const AppRouter = () => {
                   <Route index element={<Category />} />
                 </Route>
 
-                <Route path="analytics">
+                {/* <Route path="analytics">
                   <Route index element={<Analytics />} />
-                </Route>
+                </Route> */}
 
                 <Route path="complaints">
                   <Route index element={<Complaints />} />
@@ -87,10 +85,6 @@ const AppRouter = () => {
 
                 <Route path="category">
                   <Route index element={<Category />} />
-                </Route>
-
-                <Route path="messages">
-                  <Route index element={<Messages />} />
                 </Route>
 
                 <Route path="settings">

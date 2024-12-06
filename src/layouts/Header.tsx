@@ -1,8 +1,7 @@
 import { ReactNode } from "react";
-import { ArrowRight, Bell, KeyboardArrowDown, Menu } from "@/constants/icons";
+import { ArrowRight, KeyboardArrowDown, Menu } from "@/constants/icons";
 import { setOpenMenu } from "@/redux/features/appSlice";
 import { useDispatch } from "react-redux";
-import { PopoverWrapper } from "@/components/ui/components/PopoverWrapper";
 import { Link } from "react-router-dom";
 import { useAppSelector } from "@/types";
 import { useAuth } from "@/context/AuthContext";
@@ -28,21 +27,8 @@ function Header({ title, customContent }: { title?: string; customContent?: Reac
         <h2 className="capitalize text-xl sm:text-2xl">{title || "Dashboard"}</h2>
 
         <div className="row-flex gap-3">
-          <PopoverWrapper
-            containerStyles="rounded-xl border-border-100 min-w-[360px] py-6"
-            trigger={
-              <span className="icon-div !bg-background-100 relative" title="Notification">
-                <Bell className="size-4" />
-
-                <span className="absolute size-1.5 bg-red-500 rounded-full right-[0.42rem] top-[0.25rem]"></span>
-              </span>
-            }
-          >
-            <Notification />
-          </PopoverWrapper>
-
           <div className="sm:row-flex gap-2 hidden">
-            <Link to="/profile" className="">
+            <Link to="/dashboard/settings" className="">
               <AvatarWrapper containerClassName="max-sm:order-2" />
             </Link>
 
@@ -94,6 +80,7 @@ function Header({ title, customContent }: { title?: string; customContent?: Reac
 
 export default Header;
 
+// @ts-ignore
 const Notification = () => (
   <div className="flex-column gap-3 px-1.5">
     <div className="row-flex-btwn gap-4">

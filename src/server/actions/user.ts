@@ -50,9 +50,24 @@ const deleteUser = async (user_id: string): Promise<AxiosResponse["data"]> => {
   }
 };
 
+const getUserActivity = async ({
+  user_id,
+}: {
+  user_id: string;
+}): Promise<AxiosResponse["data"]> => {
+  try {
+    const response = await api.get(`${APIURLS.USERS}/${user_id}/activities`);
+
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
 export const userApi = {
   getAllUsers,
   createUser,
   editUser,
   deleteUser,
+  getUserActivity,
 };

@@ -10,6 +10,7 @@ const complaintInfo: ComplaintInfo = {
   status: "Open",
 };
 
+// @ts-ignore
 function ComplaintDetails({ data, closeModal }: { data: any; closeModal: () => void }) {
   return (
     <div>
