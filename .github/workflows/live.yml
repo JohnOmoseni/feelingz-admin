@@ -1,0 +1,50 @@
+name: Admin Luxury WithLan Live Deployment
+
+on:
+  push:
+    branches: ["main"]
+
+env:
+  VITE_API_ENDPOINT: https://api.luxurywithlan.com/api/v1/admin
+
+jobs:
+  deploying-qataloog:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: 20
+    
+    - name: Install all dependencies
+      run: yarn install
+    
+    - name: Build the web app
+      run: yarn build
+    
+    - name: Deploying to the server
+      uses: appleboy/scp-action@master
+      with:
+        host: admin.luxurywithlan.com  # EC2 instance's IP or hostname
+        username: ubuntu  # SSH username
+        key: ${{ secrets.EC2_PRIVATE_KEY }}  # SSH private key as a secret
+        
+        # Source files to copy
+        source: dist/
+        
+        # Destination path on the EC2 instance
+        target: /var/www/html/
+        
+    - name: SSH into EC2 and restart server
+      uses: appleboy/ssh-action@master
+      with:
+        host: admin.luxurywithlan.com  # EC2 instance's IP or hostname
+        username: ubuntu  # SSH username
+        key: ${{ secrets.EC2_PRIVATE_KEY }}  # SSH private key as a secret
+        script: |
+          cd /var/www/html/dist
+          # mv . ../
