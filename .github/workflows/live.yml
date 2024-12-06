@@ -31,7 +31,7 @@ jobs:
       with:
         host: admin.luxurywithlan.com  # EC2 instance's IP or hostname
         username: ubuntu  # SSH username
-        key: ${{ secrets.EC2_PRIVATE_KEY }}  # SSH private key as a secret
+        key: ${{ secrets.EC2_SECRET_KEY }}  # SSH secret key as a secret
         
         # Source files to copy
         source: dist/
@@ -44,7 +44,7 @@ jobs:
       with:
         host: admin.luxurywithlan.com  # EC2 instance's IP or hostname
         username: ubuntu  # SSH username
-        key: ${{ secrets.EC2_PRIVATE_KEY }}  # SSH private key as a secret
+        key: ${{ secrets.EC2_SECRET_KEY }}  # SSH secret key as a secret
         script: |
           cd /var/www/html/dist
           # mv . ../
