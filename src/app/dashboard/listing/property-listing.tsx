@@ -1,7 +1,6 @@
 import { DataTable } from "@/components/table/DataTable";
 import { useState } from "react";
 import { Modal } from "@/components/ui/components/Modal";
-import { topPerformers } from "@/components/table/columns/tableData";
 import {
   propertyColumn,
   topPerformingPropertyColumn,
@@ -102,7 +101,7 @@ function PropertyListing() {
 
                 <DataTable
                   columns={topPerformingPropertyColumn}
-                  tableData={topPerformers || []}
+                  tableData={[]}
                   headerRowStyles="!bg-background-100"
                   hidePageCountDropdown={true}
                   pageSize={7}

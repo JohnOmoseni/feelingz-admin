@@ -2,9 +2,10 @@ import { DataTable } from "@/components/table/DataTable";
 import { useState } from "react";
 import { Modal } from "@/components/ui/components/Modal";
 import { listingColumn } from "@/components/table/columns/listingColumn";
-import { defaultStats } from "@/constants";
 import { Plus } from "@/constants/icons";
-import { listingData } from "@/components/table/columns/tableData";
+import { useGetAllPropertyListing } from "@/hooks/useListing";
+import { toast } from "sonner";
+import { useGetFileManagerReport } from "@/hooks/useDashboard";
 
 import Card from "./_sections/Card";
 import TableGlobalSearch from "@/components/table/TableGlobalSearch";
@@ -27,8 +28,35 @@ function Dashboard() {
   const [columnFilters, setColumnFilters] = useState([]);
   const [openModal, setOpenModal] = useState<false | "post" | "edit">(false);
 
-  const tableData: any = listingData;
-  const isFetching = false;
+  const { data: allListing, isFetching, isError, error } = useGetAllPropertyListing();
+  const { data: fileManagerReport } = useGetFileManagerReport();
+
+  const tableData: any = allListing?.tableData;
+
+  if (isError) toast.error((error as any)?.response?.data?.message || "Error fetching information");
+
+  const listingStats = [
+    {
+      label: "Total Listing",
+      value: fileManagerReport?.totalListing,
+    },
+    {
+      label: "Active Users",
+      value: fileManagerReport?.activeUsers,
+    },
+    {
+      label: "Approved Listing",
+      value: fileManagerReport?.approvedListing,
+    },
+    {
+      label: "Rejected Listing",
+      value: fileManagerReport?.rejectedListing,
+    },
+    {
+      label: "Pending Listing",
+      value: fileManagerReport?.pendingListing,
+    },
+  ];
 
   return (
     <>
@@ -43,8 +71,8 @@ function Dashboard() {
         ) : (
           <>
             <div className="grid sm:grid-cols-3 gap-4 sm:gap-5">
-              {defaultStats?.length &&
-                defaultStats.map(({ label, value }, idx) => (
+              {listingStats?.length &&
+                listingStats.map(({ label, value }, idx) => (
                   <Card key={idx} label={label} value={value} idx={idx} />
                 ))}{" "}
             </div>

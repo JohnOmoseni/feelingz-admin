@@ -6,6 +6,7 @@ if (!API_DOMAIN) {
 
 export default {
   // Auth Requests
+  INDEX: "/admin",
   LOGIN: `/admin/login`,
   LOGOUT: `/admin/logout`,
   VERIFY_OTP: `/admin/verify-token`,
@@ -18,6 +19,7 @@ export default {
   // REQUESTS
   GET_APPROVAL_REPORT: `/admin/properties/approval-report`,
   GET_REPORT: `/admin/properties/report`,
+  GET_FILE_REPORT: `/admin/reports/file-manager`,
 
   PROPERTIES: `/admin/properties`,
   DISTRICTS: `/admin/districts`,

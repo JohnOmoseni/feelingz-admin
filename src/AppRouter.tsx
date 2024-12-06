@@ -18,7 +18,6 @@ import ScrollToTop from "./layouts/ScrollToTop";
 
 import Dashboard from "./app/dashboard/page";
 import PropertyListing from "./app/dashboard/listing/property-listing";
-import VehicleListing from "./app/dashboard/listing/vehicle-listing";
 import Users from "./app/dashboard/users/page";
 import Complaints from "./app/dashboard/complaints/page";
 import Category from "./app/dashboard/category/page";
@@ -63,9 +62,9 @@ const AppRouter = () => {
                   <Route index element={<PropertyListing />} />
                 </Route>
 
-                <Route path="vehicle-listings">
+                {/* <Route path="vehicle-listings">
                   <Route index element={<VehicleListing />} />
-                </Route>
+                </Route> */}
 
                 <Route path="users">
                   <Route index element={<Users />} />

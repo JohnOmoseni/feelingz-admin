@@ -130,13 +130,13 @@ export const sidebarLinks = [
     icon: Property,
     allowedRoles: [APP_ROLES.Admin, APP_ROLES.User, APP_ROLES.Staff],
   },
-  {
-    label: "Vehicle Listings",
-    href: "/dashboard/vehicle-listings",
-    tag: "vehicle listings",
-    icon: Car,
-    allowedRoles: [APP_ROLES.Admin, APP_ROLES.Staff],
-  },
+  // {
+  //   label: "Vehicle Listings",
+  //   href: "/dashboard/vehicle-listings",
+  //   tag: "vehicle listings",
+  //   icon: Car,
+  //   allowedRoles: [APP_ROLES.Admin, APP_ROLES.Staff],
+  // },
   {
     label: "User Management",
     href: "/dashboard/users",
