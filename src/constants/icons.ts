@@ -38,7 +38,7 @@ import { MdOutlineTrendingFlat as TrendFlat } from "react-icons/md";
 export { default as SuccessIcon } from "../assets/svgs/success.svg?react";
 export { default as FileUploadIcon } from "../assets/svgs/file-upload.svg?react";
 export { default as Logout } from "../assets/svgs/logout.svg?react";
-export { default as Dashboard } from "../assets/svgs/Dashboard.svg?react";
+export { default as Dashboard } from "../assets/svgs/dashboard.svg?react";
 export { default as Property } from "../assets/svgs/Property.svg?react";
 export { default as Car } from "../assets/svgs/Car.svg?react";
 export { default as User } from "../assets/svgs/User.svg?react";
