@@ -9,7 +9,7 @@ const login = async (params: {
 }): Promise<AxiosResponse["data"]> => {
   try {
     const response = await axios.post(
-      "https://staging-api.luxurywithlan.com/v1/admin/login",
+      "https://staging-api.luxurywithlan.com/api/v1/admin/login",
       params
     );
     console.log("LOGIN RESPONSE", response);

@@ -166,13 +166,13 @@ export const sidebarLinks = [
     icon: Analytics,
     allowedRoles: [APP_ROLES.Admin],
   },
-  {
-    label: "Messages",
-    href: "/dashboard/messages",
-    tag: "messages",
-    icon: Chat,
-    allowedRoles: [APP_ROLES.Admin],
-  },
+  // {
+  // label: "Messages",
+  //   href: "/dashboard/messages",
+  //   tag: "messages",
+  //   icon: Chat,
+  //   allowedRoles: [APP_ROLES.Admin],
+  // },
   {
     label: "Settings",
     href: "/dashboard/settings",

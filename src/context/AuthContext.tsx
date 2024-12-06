@@ -86,7 +86,7 @@ export default function AuthProvider({ children, navigate, ...props }: AuthProvi
         phone: user.phone,
         image: user.profile_picture,
         otpVerified: user.is_verified || false,
-        role: user.role === "super_admin" ? "ADMIN" : "STAFF",
+        role: user.role.includes("admin") ? "ADMIN" : "STAFF",
       };
 
       setToken(authToken);
