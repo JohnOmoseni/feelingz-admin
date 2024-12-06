@@ -15,6 +15,7 @@ type ProfileFormProps = {
   data?: any;
 };
 
+// @ts-ignore
 const ProfileForm = ({ data }: ProfileFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
 

@@ -2,7 +2,6 @@ import { APP_ROLES, DynamicFieldType } from "@/types";
 import {
   Analytics,
   Car,
-  Chat,
   Dashboard,
   Property,
   Settings,
