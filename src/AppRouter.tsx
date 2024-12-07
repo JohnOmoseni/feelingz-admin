@@ -13,11 +13,11 @@ import AuthLayout from "./layouts/AuthLayout";
 import ProtectedRoute from "./ProtectedRoute";
 import AuthProtectedRoute from "./AuthProtectedRoute";
 import ErrorBoundary from "./components/fallback/Error";
-import NotFound from "./layouts/NotFound";
 import ScrollToTop from "./layouts/ScrollToTop";
+import NotFound from "./layouts/NotFound";
 
 import Dashboard from "./app/dashboard/page";
-import PropertyListing from "./app/dashboard/listing/property-listing";
+import Listing from "./app/dashboard/listing/page";
 import Users from "./app/dashboard/users/page";
 import Complaints from "./app/dashboard/complaints/page";
 import Category from "./app/dashboard/category/page";
@@ -56,10 +56,9 @@ const AppRouter = () => {
             >
               <Route path="/dashboard">
                 <Route index element={<Dashboard />} />
-                <Route path="*" element={<Dashboard />} />
 
-                <Route path="property-listings">
-                  <Route index element={<PropertyListing />} />
+                <Route path="listings">
+                  <Route index element={<Listing />} />
                 </Route>
 
                 {/* <Route path="vehicle-listings">

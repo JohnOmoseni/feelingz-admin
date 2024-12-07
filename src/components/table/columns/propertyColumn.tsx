@@ -1,6 +1,6 @@
 import ListingActions from "@/app/dashboard/listing/listing-actions";
 import { StatusBadge } from "@/components/reuseables/StatusBadge";
-import { truncateString } from "@/lib";
+import { formatPrice, truncateString } from "@/lib";
 import { ColumnDef } from "@tanstack/react-table";
 
 export const topPerformingPropertyColumn: ColumnDef<any>[] = [
@@ -85,7 +85,11 @@ export const propertyColumn: ColumnDef<any>[] = [
   {
     accessorKey: "amount",
     header: "Price",
-    cell: ({ row }) => <p className="table-data-sm">&#8358;{row.original?.amount}</p>,
+    cell: ({ row }) => {
+      const price = row.original?.actual_amount;
+
+      return <p className="table-data-sm">{price ? `₦${formatPrice(price)}` : "N/A"}</p>;
+    },
   },
   {
     accessorKey: "location",

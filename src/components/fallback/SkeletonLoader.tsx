@@ -5,7 +5,7 @@ type SkeletonProps = {
 
 function SkeletonLoader({ hideCardLoading, hideChartLoading }: SkeletonProps) {
   return (
-    <div className="flex-column gap-6">
+    <div className="flex-column gap-5">
       {/* CARDS LOADER */}
       {!hideCardLoading && (
         <div className="grid sm:grid-cols-[repeat(auto-fit,_minmax(200px,_1fr))] gap-4 sm:gap-5">
@@ -41,14 +41,14 @@ function SkeletonLoader({ hideCardLoading, hideChartLoading }: SkeletonProps) {
       )}
 
       {/* SEARCH LOADER */}
-      <div className="mt-4 row-flex-btwn card !p-3">
+      <div className="mt-2 row-flex-btwn card !p-3">
         <div className="skeleton !w-[160px] !h-6" />
         <div className="skeleton" />
       </div>
 
       {/* TABLE LOADER */}
 
-      <div className="card mt-4">
+      <div className="card mt-2">
         <div className="flex-column w-full gap-6">
           <div className="!h-[220px] !w-full skeleton"></div>
         </div>

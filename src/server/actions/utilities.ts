@@ -23,7 +23,18 @@ const getStateLGAs = async (state_id: string): Promise<AxiosResponse["data"]> =>
   }
 };
 
+const getFileManagerReport = async (): Promise<AxiosResponse["data"]> => {
+  try {
+    const response = await api.get(`${API_DOMAIN}/reports/file-manager`);
+
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
 export const utilsApi = {
   getStates,
   getStateLGAs,
+  getFileManagerReport,
 };

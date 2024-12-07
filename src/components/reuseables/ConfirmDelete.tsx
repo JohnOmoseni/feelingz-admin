@@ -15,6 +15,7 @@ import { ReactNode } from "react";
 
 type Props = {
   isPending?: boolean;
+  isPendingLabel?: string;
   trigger: ReactNode;
   title?: string;
   actionTitle?: string;
@@ -25,6 +26,7 @@ type Props = {
 const ConfirmDelete = ({
   onDeleteClick,
   isPending,
+  isPendingLabel,
   trigger,
   title,
   actionTitle,
@@ -51,10 +53,10 @@ const ConfirmDelete = ({
         <AlertDialogFooter>
           <AlertDialogCancel onClick={() => null}>Cancel</AlertDialogCancel>
           <AlertDialogAction
-            className={cn("bg-red-500 text-white", actionStyles)}
+            className={cn("bg-red-500 text-white leading-4", actionStyles)}
             onClick={onDeleteClick}
           >
-            {isPending ? "Deleting..." : actionTitle || "Delete"}
+            {isPending ? isPendingLabel || "Deleting..." : actionTitle || "Delete"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

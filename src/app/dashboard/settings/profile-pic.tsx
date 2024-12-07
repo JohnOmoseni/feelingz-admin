@@ -6,9 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Button from "@/components/reuseables/CustomButton";
 
-function ProfilePic() {
+function ProfilePic({ userImage }: { userImage: string | null }) {
   const [_file, setFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
+  const [preview, setPreview] = useState<string | null>(userImage);
   const [isUploading, setIsUploading] = useState(false);
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {

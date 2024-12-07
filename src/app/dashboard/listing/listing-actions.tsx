@@ -4,7 +4,12 @@ import { VerticalDots } from "@/constants/icons";
 import { PopoverWrapper } from "@/components/ui/components/PopoverWrapper";
 import { BtnLoader } from "@/components/fallback/FallbackLoader";
 import { Modal } from "@/components/ui/components/Modal";
-import { useUpdatePropertyPublishStatus } from "@/hooks/useListing";
+import {
+  useApproveListing,
+  useDeleteListing,
+  useGetPropertyDetails,
+  useUpdatePropertyPublishStatus,
+} from "@/hooks/useListing";
 import { toast } from "sonner";
 
 import PostProperty from "@/components/forms/PostProperty";
@@ -19,7 +24,13 @@ const dropdownList = [
 
 function ListingActions({ data }: { data?: any }) {
   const [openModal, setOpenModal] = useState<false | "edit" | "details">(false);
+  const approveListingMutation = useApproveListing();
   const publishUnpublishMutation = useUpdatePropertyPublishStatus();
+  const deleteListingMutation = useDeleteListing();
+
+  const { data: listingInfo } = useGetPropertyDetails(data?.id || "", {
+    enabled: !!data?.id && openModal === "details",
+  });
 
   const [loadingStates, setLoadingStates] = useState<boolean[]>(dropdownList!?.map(() => false));
 
@@ -27,26 +38,27 @@ function ListingActions({ data }: { data?: any }) {
     0: async () => {
       const { id } = data;
 
-      await publishUnpublishMutation.mutateAsync({
-        propertyId: id,
-        type: "publish",
-      });
-      toast.success("Property published successfully");
+      await approveListingMutation.mutateAsync(id);
+      toast.success("Property approved successfully");
     },
-    1: () => {
-      toast.info("Property rejected");
-    },
-    2: () => setOpenModal("details"),
-    3: async () => {
+    1: async () => {
       const { id } = data;
 
       await publishUnpublishMutation.mutateAsync({
         propertyId: id,
         type: "unpublish",
       });
+      toast.success("Property unpublished successfully");
+    },
+    2: () => setOpenModal("details"),
+    3: async () => {
+      const { id } = data;
+
+      await deleteListingMutation.mutateAsync(id);
       toast.success("Property deleted successfully");
     },
   };
+
   const handleItemClick = async (idx: number, showLoader?: boolean) => {
     if (!onClickHandlers || typeof onClickHandlers[idx] !== "function") return;
 
@@ -60,6 +72,8 @@ function ListingActions({ data }: { data?: any }) {
 
     try {
       await onClickHandlers[idx]();
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "An error occurred");
     } finally {
       if (showLoader) {
         setLoadingStates((prev) => {
@@ -102,10 +116,14 @@ function ListingActions({ data }: { data?: any }) {
           setOpenModal={() => setOpenModal(false)}
           modalStyles="max-w-xl max-h-[550px]"
           title={"Details"}
-          topContent={<Options setOpenModal={setOpenModal} />}
+          topContent={<Options data={listingInfo || data} setOpenModal={setOpenModal} />}
         >
           <div className="mt-6 px-0.5">
-            <Details data={data} type="details" closeModal={() => setOpenModal(false)} />
+            <Details
+              data={listingInfo || data}
+              type="details"
+              closeModal={() => setOpenModal(false)}
+            />
           </div>
         </Modal>
       )}
@@ -137,18 +155,41 @@ const options = [
 ];
 
 const Options = ({
+  data,
   setOpenModal,
 }: {
+  data: any;
   setOpenModal?: React.Dispatch<React.SetStateAction<false | "edit" | "details">>;
 }) => {
+  const approveListingMutation = useApproveListing();
+  const publishUnpublishMutation = useUpdatePropertyPublishStatus();
+  const deleteListingMutation = useDeleteListing();
+
   const [loadingStates, setLoadingStates] = useState<boolean[]>(options!?.map(() => false));
 
   const onClickHandlers: { [index: number]: () => any } = {
-    0: () => null,
-    1: () => null,
+    0: async () => {
+      const { id } = data;
+
+      await approveListingMutation.mutateAsync(id);
+      toast.success("Property approved successfully");
+    },
+    1: async () => {
+      const { id } = data;
+
+      await publishUnpublishMutation.mutateAsync({
+        propertyId: id,
+        type: "unpublish",
+      });
+      toast.success("Property unpublished successfully");
+    },
     2: () => setOpenModal && setOpenModal("edit"),
-    3: () => null,
-    4: () => null,
+    3: async () => {
+      const { id } = data;
+
+      await deleteListingMutation.mutateAsync(id);
+      toast.success("Property deleted successfully");
+    },
   };
 
   const handleItemClick = async (idx: number, showLoader?: boolean) => {

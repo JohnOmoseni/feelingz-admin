@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { useFormik } from "formik";
 import { toast } from "sonner";
@@ -5,7 +6,6 @@ import { ProfileSchema } from "@/schema/validation";
 import { InferType } from "yup";
 import { Value } from "react-phone-number-input";
 import Button from "../reuseables/CustomButton";
-import { cn } from "@/lib/utils";
 
 import CustomFormField, { FormFieldType } from "@/components/forms/CustomFormField";
 import FormWrapper from "@/components/forms/FormWrapper";
@@ -39,10 +39,10 @@ const ProfileForm = ({ data }: ProfileFormProps) => {
   const { values, errors, touched, setFieldValue, handleBlur, handleChange, handleSubmit } =
     useFormik({
       initialValues: {
-        name: "",
-        email: "",
+        name: data?.name || "",
+        email: data?.email || "",
         location: "",
-        phone_number: "",
+        phone_number: data?.phone || "",
         old_password: "",
         new_password: "",
         confirm_password: "",

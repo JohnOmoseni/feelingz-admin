@@ -1,10 +1,10 @@
 import ProfileForm from "@/components/forms/ProfileForm";
 import SectionWrapper from "@/layouts/SectionWrapper";
 import ProfilePic from "./profile-pic";
+import { useAuth } from "@/context/AuthContext";
 
 function Settings() {
-  // @ts-ignore
-  const data = {};
+  const { user } = useAuth();
 
   return (
     <>
@@ -13,13 +13,13 @@ function Settings() {
           <div className="flex-column card !px-0">
             <h3 className="border-b pb-3 border-border px-4">Personal Information</h3>
 
-            <ProfileForm />
+            <ProfileForm data={user} />
           </div>
 
           <div className="flex-column w-full gap-3 card self-start !px-0">
             <h3 className="border-b pb-3 border-border px-4">Your Photo</h3>
 
-            <ProfilePic />
+            <ProfilePic userImage={user?.image!} />
           </div>
         </div>
       </SectionWrapper>

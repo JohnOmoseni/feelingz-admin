@@ -1,12 +1,15 @@
 import { StatusBadge } from "@/components/reuseables/StatusBadge";
 import { ColumnDef } from "@tanstack/react-table";
 import DashboardTableActions from "@/app/dashboard/dashboard-actions";
+import { formatPrice } from "../../../lib";
 
 export const listingColumn: ColumnDef<any>[] = [
   {
     accessorKey: "id",
     header: "Listing ID",
-    cell: ({ row }) => <p className="table-data-sm !text-left">{row.original?.id}</p>,
+    cell: ({ row }) => (
+      <p className="table-data-sm !text-left line-clamp-1">{row.original?.unique_id}</p>
+    ),
   },
 
   {
@@ -30,14 +33,18 @@ export const listingColumn: ColumnDef<any>[] = [
   {
     accessorKey: "date",
     header: "Date Submitted",
-    cell: ({ row }) => <p className="table-data-sm">{row.original?.date}</p>,
+    cell: ({ row }) => <p className="table-data-sm">{row.original?.created_at}</p>,
     enableColumnFilter: false,
     enableGlobalFilter: false,
   },
   {
     accessorKey: "price",
     header: "Price",
-    cell: ({ row }) => <p className="table-data-sm">&#8358;{row.original?.price}</p>,
+    cell: ({ row }) => {
+      const price = row.original?.actual_amount;
+
+      return <p className="table-data-sm">{price ? `₦${formatPrice(price)}` : "N/A"}</p>;
+    },
   },
   {
     accessorKey: "location",

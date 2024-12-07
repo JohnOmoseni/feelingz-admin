@@ -14,9 +14,10 @@ const getPropertyListingOverview = async (): Promise<AxiosResponse["data"]> => {
   }
 };
 
+// REPORTS
 const getPropertyReport = async (): Promise<AxiosResponse["data"]> => {
   try {
-    const response = await api.get(`${APIURLS.GET_APPROVAL_REPORT}`);
+    const response = await api.get(`${APIURLS.PROPERTIES}/approval-report`);
 
     return response.data;
   } catch (error) {
@@ -24,7 +25,7 @@ const getPropertyReport = async (): Promise<AxiosResponse["data"]> => {
   }
 };
 
-const getPropertyID = async ({
+const getPropertyByID = async ({
   property_id,
 }: {
   property_id: string;
@@ -39,6 +40,7 @@ const getPropertyID = async ({
   }
 };
 
+// POST/UPDATE LISTINGS
 const postProperty = async (data: any): Promise<AxiosResponse["data"]> => {
   const payload = data;
 
@@ -87,12 +89,70 @@ const updatePropertyPublishStatus = async ({
   }
 };
 
+// APPEOVE LISTINGS
+const approveListing = async ({
+  property_id,
+}: {
+  property_id: string;
+}): Promise<AxiosResponse["data"]> => {
+  try {
+    const response = await api.get(`${APIURLS.PROPERTIES}/${property_id}/approve`);
+    console.log("[APPROVE LISTING RESPONSE]", response);
+
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+const approveAllPending = async (): Promise<AxiosResponse["data"]> => {
+  try {
+    const response = await api.get(`${APIURLS.PROPERTIES}/approve-all-pending`);
+    console.log("[APPROVE ALL PENDING RESPONSE]", response);
+
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+const declineAllFlagged = async (): Promise<AxiosResponse["data"]> => {
+  try {
+    const response = await api.get(`${APIURLS.PROPERTIES}/decline-all-pending`);
+    console.log("[DECLINE ALL FLAGGED RESPONSE]", response);
+
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+const deleteListing = async ({
+  property_id,
+}: {
+  property_id: string;
+}): Promise<AxiosResponse["data"]> => {
+  try {
+    const response = await api.delete(`${APIURLS.PROPERTIES}/${property_id}`);
+    console.log("[DELETE LISTING RESPONSE]", response);
+
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
 export const listingApi = {
   getPropertyListingOverview,
   getPropertyReport,
-  getPropertyID,
+  getPropertyByID,
 
   postProperty,
   updateProperty,
   updatePropertyPublishStatus,
+
+  approveListing,
+  approveAllPending,
+  declineAllFlagged,
+  deleteListing,
 };

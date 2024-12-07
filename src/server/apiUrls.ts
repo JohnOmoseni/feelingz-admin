@@ -17,10 +17,6 @@ export default {
   RESET_PASSWORD: `/passwords/reset`,
 
   // REQUESTS
-  GET_APPROVAL_REPORT: `/properties/approval-report`,
-  GET_REPORT: `/properties/report`,
-  GET_FILE_REPORT: `/reports/file-manager`,
-
   PROPERTIES: `/properties`,
   DISTRICTS: `/districts`,
 

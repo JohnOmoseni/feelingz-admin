@@ -5,7 +5,7 @@ import { listingColumn } from "@/components/table/columns/listingColumn";
 import { Plus } from "@/constants/icons";
 import { useGetAllPropertyListing } from "@/hooks/useListing";
 import { toast } from "sonner";
-import { useGetFileManagerReport } from "@/hooks/useDashboard";
+import { useGetFileManagerReport } from "@/hooks/useUtils";
 
 import Card from "./_sections/Card";
 import TableGlobalSearch from "@/components/table/TableGlobalSearch";
@@ -38,23 +38,23 @@ function Dashboard() {
   const listingStats = [
     {
       label: "Total Listing",
-      value: fileManagerReport?.totalListing,
+      value: fileManagerReport?.totalListing || 0,
     },
     {
       label: "Active Users",
-      value: fileManagerReport?.activeUsers,
+      value: fileManagerReport?.activeUsers || 0,
     },
     {
       label: "Approved Listing",
-      value: fileManagerReport?.approvedListing,
+      value: fileManagerReport?.approvedListing || 0,
     },
     {
       label: "Rejected Listing",
-      value: fileManagerReport?.rejectedListing,
+      value: fileManagerReport?.rejectedListing || 0,
     },
     {
       label: "Pending Listing",
-      value: fileManagerReport?.pendingListing,
+      value: fileManagerReport?.pendingListing || 0,
     },
   ];
 

@@ -1,5 +1,5 @@
 import { APP_ROLES, DynamicFieldType } from "@/types";
-import { Analytics, Dashboard, Property, Settings, User, UserComplaint, Category } from "./icons";
+import { Dashboard, Property, Settings, User, UserComplaint, Category } from "./icons";
 import { FormFieldType } from "@/components/forms/CustomFormField";
 
 export const routes = {
@@ -115,19 +115,12 @@ export const sidebarLinks = [
     showAlways: true,
   },
   {
-    label: "Property Listings",
-    href: "/dashboard/property-listings",
-    tag: "property listings",
+    label: "Listings",
+    href: "/dashboard/listings",
+    tag: "listings",
     icon: Property,
     allowedRoles: [APP_ROLES.Admin, APP_ROLES.User, APP_ROLES.Staff],
   },
-  // {
-  //   label: "Vehicle Listings",
-  //   href: "/dashboard/vehicle-listings",
-  //   tag: "vehicle listings",
-  //   icon: Car,
-  //   allowedRoles: [APP_ROLES.Admin, APP_ROLES.Staff],
-  // },
   {
     label: "User Management",
     href: "/dashboard/users",
@@ -149,13 +142,13 @@ export const sidebarLinks = [
     icon: Category,
     allowedRoles: [APP_ROLES.Admin],
   },
-  {
-    label: "Analytics",
-    href: "/dashboard/analytics",
-    tag: "analytics",
-    icon: Analytics,
-    allowedRoles: [APP_ROLES.Admin],
-  },
+  // {
+  //   label: "Analytics",
+  //   href: "/dashboard/analytics",
+  //   tag: "analytics",
+  //   icon: Analytics,
+  //   allowedRoles: [APP_ROLES.Admin],
+  // },
   // {
   // label: "Messages",
   //   href: "/dashboard/messages",

@@ -7,7 +7,12 @@ import {
 } from "@/components/table/columns/propertyColumn";
 import { DonutChart } from "@/components/charts/Donut";
 import { toast } from "sonner";
-import { useGetAllPropertyListing, useGetPropertyReport } from "@/hooks/useListing";
+import {
+  useApproveAllPending,
+  useGetAllPropertyListing,
+  useGetPropertyReport,
+  useRejectAllFlagged,
+} from "@/hooks/useListing";
 
 import TableGlobalSearch from "@/components/table/TableGlobalSearch";
 import Filters from "@/components/table/filters";
@@ -25,7 +30,7 @@ const statusOptions = [
   { label: "Rejected", value: "rejected" },
 ];
 
-function PropertyListing() {
+function Listing() {
   const [selectedFilter, setSelectedFilter] = useState("");
   const [globalFilter, setGlobalFilter] = useState("");
   const [columnFilters, setColumnFilters] = useState([]);
@@ -36,6 +41,9 @@ function PropertyListing() {
   const { data: propertyListing, isFetching, isError, error } = useGetAllPropertyListing();
   const { data: propertyReport } = useGetPropertyReport();
 
+  const approveAllPendingMutation = useApproveAllPending();
+  const rejectAllFlaggedMutation = useRejectAllFlagged();
+
   const tableData: any = propertyListing?.tableData;
 
   if (isError) toast.error((error as any)?.response?.data?.message || "Error fetching information");
@@ -43,21 +51,37 @@ function PropertyListing() {
   const listingStats = [
     {
       label: "Total Listing",
-      value: propertyReport?.totalListing,
+      value: propertyReport?.totalListing || 0,
     },
     {
       label: "Approved Listing",
-      value: propertyReport?.approvedListing,
+      value: propertyReport?.approvedListing || 0,
     },
     {
       label: "Rejected Listing",
-      value: propertyReport?.rejectedListing,
+      value: propertyReport?.rejectedListing || 0,
     },
     {
       label: "Pending Listing",
-      value: propertyReport?.pendingListing,
+      value: propertyReport?.pendingListing || 0,
     },
   ];
+
+  const handleBulkAction = async (action: "approve" | "reject") => {
+    try {
+      if (action === "approve") {
+        await approveAllPendingMutation.mutateAsync();
+      } else {
+        await rejectAllFlaggedMutation.mutateAsync();
+      }
+
+      toast.success(`${action} all pending/flagged listings successfully`);
+    } catch (error) {
+      const message =
+        (error as any)?.response?.data?.message || "Error approving/rejecting listings";
+      toast.error(message);
+    }
+  };
 
   return (
     <>
@@ -66,17 +90,20 @@ function PropertyListing() {
         customHeaderContent={
           <div className="row-flex gap-4">
             <ConfirmDelete
-              onDeleteClick={() => null}
+              onDeleteClick={() => handleBulkAction("reject")}
               title="reject all flagged listings"
               actionTitle="Reject All"
+              isPending={rejectAllFlaggedMutation.isPending}
               trigger={<Button title="Reject all Flagged" variant="outline" size="sm" />}
             />
 
             <ConfirmDelete
-              onDeleteClick={() => null}
+              onDeleteClick={() => handleBulkAction("approve")}
               title="approve all flagged listings"
               actionTitle="Approve All"
               actionStyles="!bg-green-500"
+              isPending={rejectAllFlaggedMutation.isPending}
+              isPendingLabel="Approving..."
               trigger={<Button title="Approve all Pending" variant="outline" size="sm" />}
             />
 
@@ -168,4 +195,4 @@ function PropertyListing() {
   );
 }
 
-export default PropertyListing;
+export default Listing;

@@ -84,7 +84,7 @@ function Users() {
         }
       >
         {isFetching ? (
-          <SkeletonLoader hideChartLoading={true} />
+          <SkeletonLoader hideCardLoading={true} hideChartLoading={true} />
         ) : (
           <>
             {/* <div className="grid sm:grid-cols-3 gap-4 sm:gap-5">

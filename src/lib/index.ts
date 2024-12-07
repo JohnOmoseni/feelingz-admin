@@ -18,7 +18,7 @@ export const handleApiError = (error: any, message?: string) => {
 };
 
 export function getInitials(name: string) {
-  if (!name) return "TA";
+  if (!name) return "User";
   return name
     .split(" ")
     .map((word) => word.charAt(0).toUpperCase())
@@ -68,4 +68,11 @@ export const generateInitialValues = (
     ...staticFields,
     ...dynamicFields,
   };
+};
+
+export const formatPrice = (price: string | number) => {
+  if (!price) return 0;
+  return new Intl.NumberFormat("en-NG", {
+    maximumFractionDigits: 0,
+  }).format(Number(price));
 };

@@ -11,11 +11,12 @@ import { LogOut } from "lucide-react";
 
 import AvatarWrapper from "@/components/ui/components/AvatarWrapper";
 import { cn } from "@/lib/utils";
+import { getInitials } from "@/lib";
 
 function Header({ title, customContent }: { title?: string; customContent?: ReactNode }) {
   const dispatch = useDispatch();
   const { activeTab } = useAppSelector((state) => state.appState);
-  const { handleLogout, isLoadingAuth } = useAuth();
+  const { handleLogout, isLoadingAuth, user } = useAuth();
 
   const onLogout = async () => {
     await handleLogout();
@@ -29,14 +30,17 @@ function Header({ title, customContent }: { title?: string; customContent?: Reac
         <div className="row-flex gap-3">
           <div className="sm:row-flex gap-2 hidden">
             <Link to="/dashboard/settings" className="">
-              <AvatarWrapper containerClassName="max-sm:order-2" />
+              <AvatarWrapper
+                containerClassName="max-sm:order-2"
+                fallback={getInitials(user?.name!)}
+              />
             </Link>
 
             <DropdownList
               trigger={
                 <div className="row-flex-btwn gap-1">
                   <p className="w-full break-words text-base font-semibold leading-4">
-                    John <br className="block sm:hidden" /> Omoseni
+                    {user?.name || "Unknown"}
                   </p>
 
                   <KeyboardArrowDown className="size-4" />

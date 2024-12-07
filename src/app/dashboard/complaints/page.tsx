@@ -1,13 +1,13 @@
 import { DataTable } from "@/components/table/DataTable";
 import { useState } from "react";
-import { defaultUserStats } from "@/constants";
-import { complaintData } from "@/components/table/columns/tableData";
+import { toast } from "sonner";
 import { complaintsColumn } from "@/components/table/columns/complaintsColumn";
+import { useGetAllUsers } from "@/hooks/useUser";
 
 import TableGlobalSearch from "@/components/table/TableGlobalSearch";
 import Filters from "@/components/table/filters";
 import SectionWrapper from "@/layouts/SectionWrapper";
-import Card from "../_sections/Card";
+import SkeletonLoader from "@/components/fallback/SkeletonLoader";
 
 const statusOptions = [
   { label: "All", value: "all" },
@@ -21,12 +21,15 @@ function Complaints() {
   const [globalFilter, setGlobalFilter] = useState("");
   const [columnFilters, setColumnFilters] = useState([]);
 
-  const tableData: any = complaintData;
+  const { data: complaints, isFetching, isError, error } = useGetAllUsers();
+  const tableData: any = complaints?.tableData;
+
+  if (isError) toast.error((error as any)?.response?.data?.message || "Error fetching information");
 
   return (
     <>
       <SectionWrapper headerTitle={"Complaints"}>
-        <div className="grid sm:grid-cols-3 gap-4 sm:gap-5">
+        {/* <div className="grid sm:grid-cols-3 gap-4 sm:gap-5">
           {defaultUserStats?.length &&
             defaultUserStats.map(({ label, value, status }, idx) => (
               <Card
@@ -38,36 +41,41 @@ function Complaints() {
                 labelStyles="sm:max-md:w-[8ch]"
               />
             ))}{" "}
-        </div>
+        </div> */}
+        {isFetching ? (
+          <SkeletonLoader hideCardLoading={true} hideChartLoading={true} />
+        ) : (
+          <>
+            <div className="row-flex-btwn card !p-3">
+              <TableGlobalSearch
+                globalValue={globalFilter || ""}
+                onChange={(value: string) => setGlobalFilter(value)}
+              />
 
-        <div className="mt-10 row-flex-btwn card !p-3">
-          <TableGlobalSearch
-            globalValue={globalFilter || ""}
-            onChange={(value: string) => setGlobalFilter(value)}
-          />
+              <div className="row-flex">
+                <Filters
+                  placeholder="Filter by Status"
+                  columnId="status"
+                  showAsDropdown={true}
+                  options={statusOptions}
+                  isArrowDown={true}
+                  selectedFilter={selectedFilter}
+                  setSelectedFilter={setSelectedFilter}
+                  setColumnFilters={setColumnFilters}
+                />
+              </div>
+            </div>
 
-          <div className="row-flex">
-            <Filters
-              placeholder="Filter by Status"
-              columnId="status"
-              showAsDropdown={true}
-              options={statusOptions}
-              isArrowDown={true}
-              selectedFilter={selectedFilter}
-              setSelectedFilter={setSelectedFilter}
-              setColumnFilters={setColumnFilters}
-            />
-          </div>
-        </div>
-
-        <div className="mt-6">
-          <DataTable
-            columns={complaintsColumn}
-            tableData={tableData || []}
-            globalFilter={globalFilter}
-            columnFilters={columnFilters}
-          />
-        </div>
+            <div className="mt-6">
+              <DataTable
+                columns={complaintsColumn}
+                tableData={tableData || []}
+                globalFilter={globalFilter}
+                columnFilters={columnFilters}
+              />
+            </div>
+          </>
+        )}
       </SectionWrapper>
     </>
   );

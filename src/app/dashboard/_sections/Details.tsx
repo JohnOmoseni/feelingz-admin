@@ -3,6 +3,8 @@ import { UserAvatar } from "@/constants/icons";
 import { cn } from "@/lib/utils";
 
 function getStatusClass(label: string, value: string) {
+  if (!label || !value) return "text-foreground-100";
+
   if (label.includes("Status")) {
     if (value.includes("Approved")) return "text-green-600 font-semibold";
     if (value.includes("Rejected")) return "text-red-600 font-semibold";
@@ -64,7 +66,6 @@ function Details({ data, type, closeModal }: { data: any; type?: any; closeModal
       <div className="mt-6 mb-3 flex-column gap-6">
         {type !== "user-details" && data?.images && (
           <div className="grid grid-cols-[repeat(auto-fit,_minmax(90px,_1fr))] gap-4">
-            {/* {Array.from({ length: 5 }).map((_, idx) => { */}
             {Array.isArray(data?.images) &&
               data?.images.map((src: string, idx: number) => {
                 return (
