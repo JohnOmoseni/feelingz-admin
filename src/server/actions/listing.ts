@@ -16,7 +16,7 @@ const getPropertyListingOverview = async (): Promise<AxiosResponse["data"]> => {
 
 const getPropertyReport = async (): Promise<AxiosResponse["data"]> => {
   try {
-    const response = await api.get(`${APIURLS.PROPERTIES}/approval-report`);
+    const response = await api.get(`${APIURLS.GET_APPROVAL_REPORT}`);
 
     return response.data;
   } catch (error) {

@@ -55,7 +55,7 @@ function Sidebar() {
   return (
     <>
       <div className="row-flex mt-2 w-full overflow-hidden">
-        <img src={logo} className="w-fit h-24" />
+        <img src={logo} className="w-fit h-20" />
       </div>
       <motion.div className="flex size-full pt-7 px-4">
         <ul className="flex-column w-full gap-3">

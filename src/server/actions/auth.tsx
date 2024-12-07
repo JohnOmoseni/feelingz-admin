@@ -8,7 +8,7 @@ const login = async (params: {
   password: string;
 }): Promise<AxiosResponse["data"]> => {
   try {
-    const response = await axios.post(`${API_DOMAIN}/admin/login`, params);
+    const response = await axios.post(`${API_DOMAIN}/login`, params);
 
     return response.data;
   } catch (error) {
