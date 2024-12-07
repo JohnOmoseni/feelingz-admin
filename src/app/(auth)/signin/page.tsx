@@ -5,9 +5,8 @@ import { SignInSchema } from "@/schema/validation";
 import { useFormik } from "formik";
 import { InferType } from "yup";
 import { useAuth } from "@/context/AuthContext";
-import Button from "@/components/reuseables/CustomButton";
 import { Link } from "react-router-dom";
-import GoogleAuth from "../_sections/GoogleAuth";
+import Button from "@/components/reuseables/CustomButton";
 
 function SignIn() {
   const { handleLogin, isLoadingAuth } = useAuth();
@@ -90,8 +89,6 @@ function SignIn() {
             Recover
           </Link>
         </p>
-
-        <GoogleAuth />
       </div>
     </>
   );

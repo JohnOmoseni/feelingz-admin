@@ -1,14 +1,5 @@
 import { APP_ROLES, DynamicFieldType } from "@/types";
-import {
-  Analytics,
-  Car,
-  Dashboard,
-  Property,
-  Settings,
-  User,
-  UserComplaint,
-  Category,
-} from "./icons";
+import { Analytics, Dashboard, Property, Settings, User, UserComplaint, Category } from "./icons";
 import { FormFieldType } from "@/components/forms/CustomFormField";
 
 export const routes = {

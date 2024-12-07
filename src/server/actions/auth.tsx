@@ -1,5 +1,5 @@
 import api from "../axios";
-import APIURLS from "../apiUrls";
+import APIURLS, { API_DOMAIN } from "../apiUrls";
 import axios, { AxiosResponse } from "axios";
 import { handleApiError } from "@/lib/index";
 
@@ -8,11 +8,7 @@ const login = async (params: {
   password: string;
 }): Promise<AxiosResponse["data"]> => {
   try {
-    const response = await axios.post(
-      "https://staging-api.luxurywithlan.com/api/v1/admin/login",
-      params
-    );
-    console.log("LOGIN RESPONSE", response);
+    const response = await axios.post(`${API_DOMAIN}/admin/login`, params);
 
     return response.data;
   } catch (error) {

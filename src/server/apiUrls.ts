@@ -6,28 +6,28 @@ if (!API_DOMAIN) {
 
 export default {
   // Auth Requests
-  INDEX: "/admin",
-  LOGIN: `/admin/login`,
-  LOGOUT: `/admin/logout`,
-  VERIFY_OTP: `/admin/verify-token`,
-  RESEND_OTP: `/admin/resend-otp`,
-  REFRESH_TOKEN: `/admin/refresh-token`,
-  GET_AUTH_USER: `/admin/user`,
-  FORGOT_PASSWORD: `/admin/passwords/request`,
-  RESET_PASSWORD: `/admin/passwords/reset`,
+  INDEX: "/",
+  LOGIN: `/login`,
+  LOGOUT: `/logout`,
+  VERIFY_OTP: `/verify-token`,
+  RESEND_OTP: `/resend-otp`,
+  REFRESH_TOKEN: `/refresh-token`,
+  GET_AUTH_USER: `/user`,
+  FORGOT_PASSWORD: `/passwords/request`,
+  RESET_PASSWORD: `/passwords/reset`,
 
   // REQUESTS
-  GET_APPROVAL_REPORT: `/admin/properties/approval-report`,
-  GET_REPORT: `/admin/properties/report`,
-  GET_FILE_REPORT: `/admin/reports/file-manager`,
+  GET_APPROVAL_REPORT: `/properties/approval-report`,
+  GET_REPORT: `/properties/report`,
+  GET_FILE_REPORT: `/reports/file-manager`,
 
-  PROPERTIES: `/admin/properties`,
-  DISTRICTS: `/admin/districts`,
+  PROPERTIES: `/properties`,
+  DISTRICTS: `/districts`,
 
-  CATEGORIES: `/admin/categories`,
-  MAIN_CATEGORIES: `/admin/main-categories`,
+  CATEGORIES: `/categories`,
+  MAIN_CATEGORIES: `/main-categories`,
 
-  COMPLAINTS: `/admin/complaints`,
+  COMPLAINTS: `/complaints`,
 
-  USERS: `/admin/users`,
+  USERS: `/users`,
 };
