@@ -9,7 +9,6 @@ import Button from "../reuseables/CustomButton";
 
 import CustomFormField, { FormFieldType } from "@/components/forms/CustomFormField";
 import FormWrapper from "@/components/forms/FormWrapper";
-import FormFileUpload from "./FormFileUpload";
 
 type CategoryProps = {
   data?: any;

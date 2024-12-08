@@ -2,13 +2,12 @@ import { DataTable } from "@/components/table/DataTable";
 import { useState } from "react";
 import { toast } from "sonner";
 import { complaintsColumn } from "@/components/table/columns/complaintsColumn";
-import { useGetAllUsers } from "@/hooks/useUser";
+import { useGetAllComplaints } from "@/hooks/useComplaints";
 
 import TableGlobalSearch from "@/components/table/TableGlobalSearch";
 import Filters from "@/components/table/filters";
 import SectionWrapper from "@/layouts/SectionWrapper";
 import SkeletonLoader from "@/components/fallback/SkeletonLoader";
-import { useGetAllComplaints } from "@/hooks/useComplaints";
 
 const statusOptions = [
   { label: "All", value: "all" },
