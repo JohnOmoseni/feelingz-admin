@@ -13,6 +13,16 @@ const getAllUsers = async (): Promise<AxiosResponse["data"]> => {
   }
 };
 
+const getUserByID = async (user_id: string): Promise<AxiosResponse["data"]> => {
+  try {
+    const response = await api.get(`${APIURLS.USERS}/${user_id}`);
+
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
 const createUser = async (user: any): Promise<AxiosResponse["data"]> => {
   const payload = user;
 
@@ -26,16 +36,22 @@ const createUser = async (user: any): Promise<AxiosResponse["data"]> => {
   }
 };
 
-const editUser = async ({ user_id, ...user }: any): Promise<AxiosResponse["data"]> => {
-  const payload = user;
+const updateUserStatus = async ({
+  user_id,
+  action,
+}: {
+  user_id: string;
+  action: "activate" | "deactivate";
+}): Promise<AxiosResponse["data"]> => {
+  const payload = { status: action === "activate" ? "active" : "false" };
 
   try {
     const response = await api.put(`${APIURLS.USERS}/${user_id}`, payload);
-    console.log("[EDIT USER BY ID RESPONSE]", response);
 
     return response.data;
   } catch (error) {
     handleApiError(error);
+    throw error;
   }
 };
 
@@ -50,11 +66,7 @@ const deleteUser = async (user_id: string): Promise<AxiosResponse["data"]> => {
   }
 };
 
-const getUserActivity = async ({
-  user_id,
-}: {
-  user_id: string;
-}): Promise<AxiosResponse["data"]> => {
+const getUserActivity = async (user_id: string): Promise<AxiosResponse["data"]> => {
   try {
     const response = await api.get(`${APIURLS.USERS}/${user_id}/activities`);
 
@@ -67,7 +79,8 @@ const getUserActivity = async ({
 export const userApi = {
   getAllUsers,
   createUser,
-  editUser,
+  updateUserStatus,
   deleteUser,
   getUserActivity,
+  getUserByID,
 };

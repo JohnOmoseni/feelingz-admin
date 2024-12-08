@@ -2,10 +2,10 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { VerticalDots } from "@/constants/icons";
 import { PopoverWrapper } from "@/components/ui/components/PopoverWrapper";
-import { BtnLoader } from "@/components/fallback/FallbackLoader";
+import FallbackLoader, { BtnLoader } from "@/components/fallback/FallbackLoader";
 import { Modal } from "@/components/ui/components/Modal";
 import { toast } from "sonner";
-import { useDeleteCategory } from "@/hooks/useCategory";
+import { useDeleteCategory, useGetCategoryDetails } from "@/hooks/useCategory";
 
 import CategoryDetails from "./category-details";
 import CategoryForm from "@/components/forms/CategoryForm";
@@ -22,6 +22,12 @@ function CategoryActions({ data }: { data?: any }) {
   const [loadingStates, setLoadingStates] = useState<boolean[]>(dropdownList!?.map(() => false));
   const deleteCategoryMutation = useDeleteCategory();
 
+  const { data: category, isLoading } = useGetCategoryDetails(data?.id || "", {
+    enabled: !!data?.id && (openModal === "edit" || openModal === "view_subcategory"),
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+  });
+
   const onClickHandlers: { [index: number]: () => any } = {
     0: () => setOpenModal("view_subcategory"),
     1: () => setOpenModal("edit"),
@@ -32,8 +38,9 @@ function CategoryActions({ data }: { data?: any }) {
         await deleteCategoryMutation.mutateAsync(category_id);
 
         toast.success("Category deleted successfully");
-      } catch {
-        toast.error("Error deleting category");
+      } catch (error: any) {
+        const message = error?.response?.data?.message || "Error deleting category";
+        toast.error(message);
       }
     },
   };
@@ -51,6 +58,8 @@ function CategoryActions({ data }: { data?: any }) {
 
     try {
       await onClickHandlers[idx]();
+    } catch (error) {
+      toast.error((error as any)?.response?.data?.message || "An error occurred");
     } finally {
       if (showLoader) {
         setLoadingStates((prev) => {
@@ -90,14 +99,24 @@ function CategoryActions({ data }: { data?: any }) {
       {openModal === "view_subcategory" && (
         <Modal
           openModal={openModal === "view_subcategory"}
-          setOpenModal={() => setOpenModal(false)}
+          setOpenModal={() => {
+            setOpenModal(false);
+          }}
           modalStyles="max-w-xl max-h-[550px]"
           title={data?.name}
           description={data?.description}
         >
-          <div className="mt-6 px-0.5">
-            <CategoryDetails data={data} setOpenModal={setOpenModal} />
-          </div>
+          <>
+            {isLoading ? (
+              <div className="row-flex relative h-[120px]">
+                <FallbackLoader loading={isLoading} />
+              </div>
+            ) : (
+              <div className="mt-4 px-0.5">
+                <CategoryDetails data={category} setOpenModal={setOpenModal} />
+              </div>
+            )}
+          </>
         </Modal>
       )}
 
@@ -106,10 +125,16 @@ function CategoryActions({ data }: { data?: any }) {
           openModal={openModal === "edit"}
           setOpenModal={() => setOpenModal(false)}
           modalStyles="max-w-[38rem] max-h-[580px]"
-          title={"Edit Category"}
+          title="Edit Category"
         >
           <div className="mt-4 px-0.5">
-            <CategoryForm type="edit" data={data} closeModal={() => setOpenModal(false)} />
+            {category ? (
+              <CategoryForm type="edit" data={category} closeModal={() => setOpenModal(false)} />
+            ) : (
+              <div className="row-flex relative h-[100px]">
+                <FallbackLoader loading={isLoading} />
+              </div>
+            )}
           </div>
         </Modal>
       )}

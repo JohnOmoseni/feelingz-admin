@@ -39,9 +39,7 @@ const CategoryForm = ({ data, type, closeModal }: CategoryProps) => {
       name: values.name,
       description: values.description,
       group: "cars",
-      avatar_url: values.mediaImage,
       ...(type === "edit" ? { category_id: data?.id } : {}),
-      // sub_category: values.sub_category,
     };
 
     try {
@@ -61,12 +59,15 @@ const CategoryForm = ({ data, type, closeModal }: CategoryProps) => {
     name: data?.name || "",
     description: data?.description || "",
     mediaImage: data?.avatar || "",
-    sub_category:
-      data?.sub_category ||
-      Array.from({ length: 1 }).map((_, idx) => ({
-        id: idx + 1,
-        value: "",
-      })),
+    sub_category: data?.subcategories
+      ? data?.subcategories?.map((category: any, idx: number) => ({
+          id: idx + 1,
+          value: category?.name,
+        }))
+      : Array.from({ length: 1 }).map((_, idx) => ({
+          id: idx + 1,
+          value: "",
+        })),
   };
 
   return (
@@ -77,13 +78,13 @@ const CategoryForm = ({ data, type, closeModal }: CategoryProps) => {
         onSubmit(values);
       }}
     >
-      {({ values, errors, touched, setFieldValue, handleBlur, handleChange, handleSubmit }) => {
+      {({ values, errors, touched, handleBlur, handleChange, handleSubmit }) => {
         console.log("ERRORS", errors);
         return (
           <FormWrapper
             btnStyles="!w-max ml-auto"
             containerStyles="max-w-full "
-            buttonLabel="Add Category"
+            buttonLabel={type === "add" ? "Add Category" : "Update Category"}
             onSubmit={handleSubmit}
             isSubmitting={isLoading}
           >
@@ -168,23 +169,6 @@ const CategoryForm = ({ data, type, closeModal }: CategoryProps) => {
                   </div>
                 )}
               />
-
-              <div className="mt-3">
-                <CustomFormField
-                  fieldType={FormFieldType.SKELETON}
-                  name="mediaImage"
-                  errors={errors}
-                  onBlur={handleBlur}
-                  touched={touched}
-                  renderSkeleton={() => (
-                    <FormFileUpload
-                      title="Add Images (Optional)"
-                      name="mediaImage"
-                      onFileChange={(file) => setFieldValue("mediaImage", file)}
-                    />
-                  )}
-                />
-              </div>
             </div>
           </FormWrapper>
         );

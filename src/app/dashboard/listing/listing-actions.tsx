@@ -2,7 +2,7 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { VerticalDots } from "@/constants/icons";
 import { PopoverWrapper } from "@/components/ui/components/PopoverWrapper";
-import { BtnLoader } from "@/components/fallback/FallbackLoader";
+import FallbackLoader, { BtnLoader } from "@/components/fallback/FallbackLoader";
 import { Modal } from "@/components/ui/components/Modal";
 import {
   useApproveListing,
@@ -28,8 +28,10 @@ function ListingActions({ data }: { data?: any }) {
   const publishUnpublishMutation = useUpdatePropertyPublishStatus();
   const deleteListingMutation = useDeleteListing();
 
-  const { data: listingInfo } = useGetPropertyDetails(data?.id || "", {
+  const { data: listingInfo, isLoading } = useGetPropertyDetails(data?.id || "", {
     enabled: !!data?.id && openModal === "details",
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 
   const [loadingStates, setLoadingStates] = useState<boolean[]>(dropdownList!?.map(() => false));
@@ -114,17 +116,25 @@ function ListingActions({ data }: { data?: any }) {
         <Modal
           openModal={openModal === "details"}
           setOpenModal={() => setOpenModal(false)}
-          modalStyles="max-w-xl max-h-[550px]"
-          title={"Details"}
-          topContent={<Options data={listingInfo || data} setOpenModal={setOpenModal} />}
+          modalStyles={cn("max-w-xl max-h-[550px]", isLoading && "min-h-min")}
+          title={data?.name || "Details"}
+          // topContent={<Options data={listingInfo || data} setOpenModal={setOpenModal} />}
         >
-          <div className="mt-6 px-0.5">
-            <Details
-              data={listingInfo || data}
-              type="details"
-              closeModal={() => setOpenModal(false)}
-            />
-          </div>
+          <>
+            {isLoading ? (
+              <div className="row-flex relative h-[150px] ">
+                <FallbackLoader loading={isLoading} />
+              </div>
+            ) : (
+              <div className="px-0.5 mt-6">
+                <Details
+                  data={listingInfo || data}
+                  type="details"
+                  closeModal={() => setOpenModal(false)}
+                />
+              </div>
+            )}
+          </>
         </Modal>
       )}
 
@@ -135,8 +145,20 @@ function ListingActions({ data }: { data?: any }) {
           modalStyles="max-w-xl max-h-[550px]"
           title="Edit Property"
         >
-          <div className="mt-6 px-0.5">
-            <PostProperty data={data} type="edit" closeModal={() => setOpenModal(false)} />
+          <div className="">
+            {isLoading ? (
+              <div className="row-flex relative h-[100px]">
+                <FallbackLoader loading={isLoading} />
+              </div>
+            ) : (
+              <div className="mt-6 px-0.5">
+                <PostProperty
+                  data={listingInfo || data}
+                  type="edit"
+                  closeModal={() => setOpenModal(false)}
+                />
+              </div>
+            )}
           </div>
         </Modal>
       )}
@@ -154,6 +176,7 @@ const options = [
   { icon: "", label: "Delete", showLoader: true },
 ];
 
+// @ts-ignore
 const Options = ({
   data,
   setOpenModal,

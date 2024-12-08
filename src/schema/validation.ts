@@ -55,23 +55,11 @@ export const AddAdminSchema = yup.object().shape({
       (value) => isValidPhoneNumber(value!, "NG") // Validate if it's a valid Nigerian phone number
     )
     .required("Phone Number is required"),
-  password: yup.string().required("Password is required"),
-  confirm_password: yup
-    .string()
-    .oneOf([yup.ref("password"), undefined], "Passwords must match")
-    .required("Please confirm your new password"),
 });
 
 export const CategorySchema = yup.object().shape({
   name: yup.string().required("Title is required"),
   description: yup.string().min(5, "Description must be at least 5 characters"),
-  mediaImage: yup
-    .mixed()
-    .nullable()
-    .test("fileSize", "File is too large, must be less than 4MB", (value: any) => {
-      if (!value) return true; // allow empty values
-      return (value as File).size <= 4 * 1024 * 1024;
-    }),
   sub_category: yup.array().of(
     yup.object().shape({
       value: yup.string().required("Sub Category is required"),

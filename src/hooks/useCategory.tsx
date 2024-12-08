@@ -28,6 +28,32 @@ export const useGetAllCategories = () => {
   });
 };
 
+export const useGetCategoryDetails = (category_id: string, options: any) => {
+  return useQuery({
+    queryKey: ["getCategoryDetails", category_id],
+    queryFn: () => categoryApi.getCategoryByID(category_id),
+    select: (data) => {
+      const category = data.data;
+
+      const info = {
+        id: String(category.id),
+        name: category.name,
+        key: category.key,
+        description: category.description,
+        avatar: category.avatar_url,
+        is_published: category.is_published === 1 ? true : false,
+        subcategories: category.sub_categories,
+        created_at: category.created_at
+          ? dayjs(category.created_at).format("DD-MM-YYYY h:mmA")
+          : null,
+      };
+
+      return info;
+    },
+    enabled: options.enabled,
+  });
+};
+
 // POST REQUESTS
 export const useCreateCategory = (): UseMutationResult<any, unknown> => {
   const queryClient = useQueryClient();

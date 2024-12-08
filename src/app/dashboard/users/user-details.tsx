@@ -1,18 +1,77 @@
-function UserDetails({}) {
+import Button from "@/components/reuseables/CustomButton";
+import { UserAvatar } from "@/constants/icons";
+import { cn } from "@/lib/utils";
+
+function getStatusClass(label: string, value: string) {
+  if (!label || !value) return "text-foreground-100";
+
+  if (label.includes("Status")) {
+    if (value.includes("Active")) return "text-green-600 font-semibold";
+    if (value.includes("Inactive")) return "text-red-600 font-semibold";
+  }
+  return "text-foreground-100";
+}
+
+function UserDetails({ data, closeModal }: { data: any; closeModal?: () => void }) {
+  console.log("DATA", data);
+
+  const details = [
+    {
+      label: "State",
+      value: data?.state_name || "N/A",
+    },
+    {
+      label: "LGA",
+      value: data?.lga_name || "N/A",
+    },
+    {
+      label: "Status",
+      value: data?.status || "N/A",
+    },
+    {
+      label: "Last Seen",
+      value: data?.last_seen || "N/A",
+    },
+  ];
+
   return (
     <div>
-      <div className="pb-4 border-b border-border-100">
-        <h3>Connie Robertson</h3>
+      <div className="pb-4 border-b border-border-100 flex-column !items-center">
+        {data?.profile_picture ? (
+          <img
+            src={data?.profile_picture}
+            alt="Profile Picture"
+            className="rounded-full h-36 w-36 border border-border object-cover"
+          />
+        ) : (
+          <UserAvatar className="w-fit h-[100px]" />
+        )}
 
-        <p className="text-sm text-grey max-w-[40ch]">johnnyomoseni@gmail.com | +2348 125 6784</p>
+        <h3 className="leading-4 mt-4 mb-1">{data?.name || "Unknown"}</h3>
+
+        <p className="text-sm text-grey max-w-[40ch]">
+          {data?.email || <span>unknown</span>} {data?.phone && `| ${data?.phone}`}
+        </p>
       </div>
 
-      <div className="grid grid-cols-[repeat(auto-fill_minmax(50ch,_1fr)] gap-y-4 gap-x-6">
-        <div className="flex-column gap-1">
-          <p className="font-semibold tracking-wide">Account Creation Date</p>
+      <div className="mt-6 mb-3 flex-column gap-6">
+        <ul className="grid grid-cols-2 gap-5 sm:gap-x-12">
+          {details?.map(({ label, value }, idx) => (
+            <li key={idx} className="w-full flex-column gap-0.5">
+              <p className="font-semibold">{label}</p>
+              <p
+                className={cn(
+                  "text-foreground-100 tracking-wide text-base leading-5",
+                  getStatusClass(label, value)
+                )}
+              >
+                {value}
+              </p>
+            </li>
+          ))}
+        </ul>
 
-          <p className="text-foreground-100 text-base leading-5">12-Oct-2024</p>
-        </div>
+        <Button title="Close" className="!w-max mx-auto mt-4" onClick={closeModal && closeModal} />
       </div>
     </div>
   );

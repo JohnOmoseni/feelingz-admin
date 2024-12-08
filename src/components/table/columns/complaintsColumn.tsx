@@ -29,9 +29,9 @@ export const complaintsColumn: ColumnDef<any>[] = [
     ),
   },
   {
-    accessorKey: "date",
+    accessorKey: "created_at",
     header: "Date Submitted",
-    cell: ({ row }) => <p className="table-data-sm">{row.original?.date}</p>,
+    cell: ({ row }) => <p className="table-data-sm">{row.original?.created_at}</p>,
     enableColumnFilter: false,
     enableGlobalFilter: false,
   },

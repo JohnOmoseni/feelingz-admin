@@ -5,10 +5,10 @@ import { VerticalDots } from "@/constants/icons";
 import { PopoverWrapper } from "@/components/ui/components/PopoverWrapper";
 import { BtnLoader } from "@/components/fallback/FallbackLoader";
 import { Modal } from "@/components/ui/components/Modal";
-import { useDeleteUser } from "@/hooks/useUser";
+import { useDeleteUser, useUpdateUserStatus } from "@/hooks/useUser";
 
-import Details from "../_sections/Details";
 import ActivityHistory from "./activity";
+import UserDetails from "./user-details";
 
 const dropdownList = [
   { icon: "", label: "View details", showLoader: false },
@@ -22,15 +22,28 @@ function UserActions({ data }: { data?: any }) {
 
   const [loadingStates, setLoadingStates] = useState<boolean[]>(dropdownList!?.map(() => false));
   const deleteUserMutation = useDeleteUser();
+  const updateUserStatusMutation = useUpdateUserStatus();
 
   const onClickHandlers: { [index: number]: () => any } = {
     0: () => setOpenModal("details"),
-    1: () => null,
-    2: () => null,
+    1: async () => {
+      const { id: user_id } = data;
+
+      await updateUserStatusMutation.mutateAsync({ user_id, action: "activate" });
+      toast.success("User activated successfully");
+    },
+    2: async () => {
+      const { id: user_id } = data;
+
+      await updateUserStatusMutation.mutateAsync({ user_id, action: "deactivate" });
+
+      toast.success("User deactivated successfully");
+    },
     3: async () => {
       const { id: user_id } = data;
 
       await deleteUserMutation.mutateAsync(user_id);
+
       toast.success("User deleted successfully");
     },
   };
@@ -48,6 +61,9 @@ function UserActions({ data }: { data?: any }) {
 
     try {
       await onClickHandlers[idx]();
+    } catch (error: any) {
+      const message = error?.response?.data?.message || error?.message || "An error occurred";
+      toast.error(message);
     } finally {
       if (showLoader) {
         setLoadingStates((prev) => {
@@ -89,11 +105,10 @@ function UserActions({ data }: { data?: any }) {
           openModal={openModal === "details"}
           setOpenModal={() => setOpenModal(false)}
           modalStyles="max-w-xl max-h-[550px]"
-          title={data?.username || "Details"}
-          topContent={<Options setOpenModal={setOpenModal} />}
+          title={data?.name || "Details"}
         >
           <div className="mt-6 px-0.5">
-            <Details data={data} type="user-details" closeModal={() => setOpenModal(false)} />
+            <UserDetails data={data} closeModal={() => setOpenModal(false)} />
           </div>
         </Modal>
       )}
@@ -123,6 +138,7 @@ const options = [
   { icon: "", label: "Delete", showLoader: true },
 ];
 
+// @ts-ignore
 const Options = ({
   setOpenModal,
 }: {

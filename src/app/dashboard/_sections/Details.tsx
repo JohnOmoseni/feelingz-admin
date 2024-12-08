@@ -1,5 +1,6 @@
 import Button from "@/components/reuseables/CustomButton";
 import { UserAvatar } from "@/constants/icons";
+import { formatPrice } from "@/lib";
 import { cn } from "@/lib/utils";
 
 function getStatusClass(label: string, value: string) {
@@ -26,7 +27,7 @@ function Details({ data, type, closeModal }: { data: any; type?: any; closeModal
     },
     {
       label: "Price",
-      value: data?.amount,
+      value: formatPrice(data?.amount || ""),
     },
     {
       label: "Property Type",

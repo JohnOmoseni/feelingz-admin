@@ -57,8 +57,6 @@ const AddAminForm = ({ closeModal }: AddAdminProps) => {
         role: "",
         email: "",
         phone_number: "",
-        password: "",
-        confirm_password: "",
       },
       validationSchema: AddAdminSchema,
       onSubmit,
@@ -138,40 +136,6 @@ const AddAminForm = ({ closeModal }: AddAdminProps) => {
           errors={errors}
           touched={touched}
         />
-
-        <p className="text-lg font-medium leading-3 mt-2">Security</p>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-5">
-          <CustomFormField
-            fieldType={FormFieldType.INPUT}
-            name="password"
-            label="Password"
-            onBlur={handleBlur}
-            errors={errors}
-            touched={touched}
-            onChange={handleChange}
-            tag="auth"
-            field={{
-              value: values.password,
-              type: "password",
-            }}
-          />
-
-          <CustomFormField
-            fieldType={FormFieldType.INPUT}
-            name="confirm_password"
-            label="Confirm Password"
-            onBlur={handleBlur}
-            errors={errors}
-            touched={touched}
-            onChange={handleChange}
-            tag="auth"
-            field={{
-              value: values.confirm_password,
-              type: "password",
-            }}
-          />
-        </div>
       </div>
     </FormWrapper>
   );

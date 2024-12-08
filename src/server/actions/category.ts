@@ -13,6 +13,16 @@ const getAllCategories = async (): Promise<AxiosResponse["data"]> => {
   }
 };
 
+const getCategoryByID = async (category_id: string): Promise<AxiosResponse["data"]> => {
+  try {
+    const response = await api.get(`${APIURLS.CATEGORIES}/${category_id}`);
+
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
 const createCategory = async (category: any): Promise<AxiosResponse["data"]> => {
   const payload = category;
 
@@ -30,7 +40,6 @@ const editCategory = async ({ category_id, ...category }: any): Promise<AxiosRes
 
   try {
     const response = await api.put(`${APIURLS.CATEGORIES}/${category_id}`, payload);
-    console.log("[EDIT USER BY ID RESPONSE]", response);
 
     return response.data;
   } catch (error) {
@@ -41,7 +50,6 @@ const editCategory = async ({ category_id, ...category }: any): Promise<AxiosRes
 const deleteCategory = async (category_id: string): Promise<AxiosResponse["data"]> => {
   try {
     const response = await api.delete(`${APIURLS.CATEGORIES}/${category_id}`);
-    console.log("[DELETE USER BY ID RESPONSE]", response);
 
     return response.data;
   } catch (error) {
@@ -51,6 +59,7 @@ const deleteCategory = async (category_id: string): Promise<AxiosResponse["data"
 
 export const categoryApi = {
   getAllCategories,
+  getCategoryByID,
   createCategory,
   editCategory,
   deleteCategory,

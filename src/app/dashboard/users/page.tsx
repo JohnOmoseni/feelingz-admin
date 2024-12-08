@@ -17,8 +17,7 @@ import SkeletonLoader from "@/components/fallback/SkeletonLoader";
 const statusOptions = [
   { label: "All", value: "all" },
   { label: "Active", value: "active" },
-  { label: "Suspended", value: "suspended" },
-  { label: "Banned", value: "banned" },
+  { label: "Inactive", value: "inactive" },
 ];
 
 function Users() {
@@ -41,15 +40,6 @@ function Users() {
   //     value: "5,620",
   //   },
   //   {
-  //     label: "Suspended Accounts",
-  //     value: "6,620",
-  //     status: "high",
-  //   },
-  //   {
-  //     label: "Banned Accounts",
-  //     value: "28",
-  //     status: "low",
-  //   },
   //   {
   //     label: "New Users",
   //     value: "28",

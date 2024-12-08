@@ -13,12 +13,10 @@ const getAllComplaints = async (): Promise<AxiosResponse["data"]> => {
   }
 };
 
-const createUser = async (user: any): Promise<AxiosResponse["data"]> => {
-  const payload = user;
-
+const createComplaint = async (payload: any): Promise<AxiosResponse["data"]> => {
   try {
-    const response = await api.post(`${APIURLS.USERS}`, payload);
-    console.log("[CREATE USER RESPONSE]", response);
+    const response = await api.post(`${APIURLS.COMPLAINTS}`, payload);
+    console.log("[CREATE COMPLAINT RESPONSE]", response);
 
     return response.data;
   } catch (error) {
@@ -26,10 +24,16 @@ const createUser = async (user: any): Promise<AxiosResponse["data"]> => {
   }
 };
 
-const deleteUser = async (user_id: string): Promise<AxiosResponse["data"]> => {
+const editComplaint = async ({
+  complaint_id,
+  ...payload
+}: {
+  complaint_id: string;
+  [key: string]: any;
+}): Promise<AxiosResponse["data"]> => {
   try {
-    const response = await api.delete(`${APIURLS.USERS}/${user_id}`);
-    console.log("[DELETE USER BY ID RESPONSE]", response);
+    const response = await api.put(`${APIURLS.COMPLAINTS}/${complaint_id}`, payload);
+    console.log("[EDIT COMPLAINT RESPONSE]", response);
 
     return response.data;
   } catch (error) {
@@ -37,4 +41,24 @@ const deleteUser = async (user_id: string): Promise<AxiosResponse["data"]> => {
   }
 };
 
-export const userApi = {};
+const deleteComplaint = async ({
+  complaint_id,
+}: {
+  complaint_id: string;
+}): Promise<AxiosResponse["data"]> => {
+  try {
+    const response = await api.delete(`${APIURLS.COMPLAINTS}/${complaint_id}`);
+    console.log("[DELETE COMPLAINT RESPONSE]", response);
+
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+export const complaintApi = {
+  getAllComplaints,
+  createComplaint,
+  editComplaint,
+  deleteComplaint,
+};

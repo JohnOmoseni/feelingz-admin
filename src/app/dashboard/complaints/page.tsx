@@ -8,6 +8,7 @@ import TableGlobalSearch from "@/components/table/TableGlobalSearch";
 import Filters from "@/components/table/filters";
 import SectionWrapper from "@/layouts/SectionWrapper";
 import SkeletonLoader from "@/components/fallback/SkeletonLoader";
+import { useGetAllComplaints } from "@/hooks/useComplaints";
 
 const statusOptions = [
   { label: "All", value: "all" },
@@ -21,7 +22,7 @@ function Complaints() {
   const [globalFilter, setGlobalFilter] = useState("");
   const [columnFilters, setColumnFilters] = useState([]);
 
-  const { data: complaints, isFetching, isError, error } = useGetAllUsers();
+  const { data: complaints, isFetching, isError, error } = useGetAllComplaints();
   const tableData: any = complaints?.tableData;
 
   if (isError) toast.error((error as any)?.response?.data?.message || "Error fetching information");
