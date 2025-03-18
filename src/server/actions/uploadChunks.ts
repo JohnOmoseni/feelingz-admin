@@ -1,5 +1,5 @@
-import api from "@/server/axios";
 import { AxiosProgressEvent, AxiosResponse } from "axios";
+import { baseApi } from "../axios";
 
 export const uploadChunks = async (
   file: File,
@@ -9,7 +9,7 @@ export const uploadChunks = async (
   const totalChunks = Math.ceil(file.size / chunkSize); // Calculates how many chunks are needed to upload the file
 
   try {
-    const initiateResponse: AxiosResponse = await api.post("/media-upload/initiate", {
+    const initiateResponse: AxiosResponse = await baseApi.post("/media-upload/initiate", {
       file_name: file.name,
       content_type: file.type,
     }); // starts the upload process
@@ -33,7 +33,7 @@ export const uploadChunks = async (
       formData.append("chunk_number", (index + 1).toString());
 
       // Send each chunk to the server with its metadata
-      return api.post("/media-upload/upload-chunk", formData, {
+      return baseApi.post("/media-upload/upload-chunk", formData, {
         onUploadProgress: (progressEvent: AxiosProgressEvent) => {
           // Calculates the percentage (chunkProgress) of the chunk uploaded.
           const chunkProgress = Math.round(
@@ -46,7 +46,7 @@ export const uploadChunks = async (
 
     await Promise.all(chunkPromises);
 
-    const res = await api.post("/media-upload/complete-upload", {
+    const res = await baseApi.post("/media-upload/complete-upload", {
       upload_id: uploadId,
       file_name: file.name,
       total_chunks: totalChunks,
