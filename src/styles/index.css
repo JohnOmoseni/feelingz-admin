@@ -1,8 +1,18 @@
-/* @import url("https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,100..900;1,100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"); */
+@import url("https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,100..900;1,100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
 
 @font-face {
   font-family: "Sora";
+  src: url("/fonts/Sora-SemiBold.ttf");
+}
+
+@font-face {
+  font-family: "Sora-Medium";
   src: url("/fonts/Sora-Medium.ttf");
+}
+
+@font-face {
+  font-family: "Sora-Semibold";
+  src: url("/fonts/Sora-SemiBold.ttf");
 }
 
 @tailwind base;
@@ -12,25 +22,24 @@
 @layer base {
   :root {
     --background: #fff;
-    --background-100: #f3f5f6;
-    --background-200: #f8fafc;
+    --background-100: #fafafa;
 
     --foreground: #313c49;
     --foreground-100: #5f738c;
-    --foreground-variant: #398dfa;
+    --foreground-variant: #121212;
 
-    --secondary: #398dfa;
-    --secondary-100: #ccead9;
+    --secondary: #1b1b1b;
+    --secondary-100: #444;
     --secondary-foreground: #fafaff;
+
+    --accent: #ffc851;
 
     --border: #c8d2df;
     --border-100: #e1e6ed;
-    --border-200: #efefef;
-    --border-variant: #398dfa;
+    --border-variant: #121212;
 
     --grey: #8c9db1;
     --grey-100: #919eab33;
-    --grey-200: #b8b8b8;
 
     --input: #aab7c6;
     --placeholder: #8c9db1;
@@ -55,16 +64,16 @@
 
 @layer base {
   body {
-    @apply bg-background  text-foreground;
+    @apply bg-background text-foreground;
   }
   h1 {
-    @apply text-primaryFont font-interTight font-bold;
+    @apply text-primaryFont font-inter font-semibold;
   }
   h2 {
-    @apply text-secondaryFont !leading-7 font-bold;
+    @apply text-secondaryFont font-inter font-semibold;
   }
   h3 {
-    @apply text-subtitle font-semibold;
+    @apply text-subtitle font-inter font-semibold;
   }
 }
 
@@ -91,12 +100,6 @@
   }
 
   /* UTILITIES STYLES */
-  .grey-text {
-    @apply text-sm font-medium leading-snug text-foreground-100 max-[430px]:text-[0.7rem];
-  }
-  .small-text {
-    @apply text-xs max-[430px]:text-[0.7rem] sm:text-sm;
-  }
   .blend-image {
     @apply relative overflow-hidden before:absolute after:absolute after:inset-0 after:rounded-lg after:bg-secondary after:mix-blend-soft-light;
   }
@@ -127,7 +130,7 @@
   }
 
   .shad-select-trigger {
-    @apply h-auto min-w-[80px] gap-2 border border-border-100 font-semibold w-full rounded-lg py-2.5 px-3 bg-inherit text-sm placeholder:text-placeholder focus:ring-0 focus:ring-transparent md:whitespace-nowrap cursor-pointer leading-4 active:bg-background-200 transition;
+    @apply h-auto min-w-[80px] gap-2 border border-border-100 font-semibold w-full rounded-lg py-2.5 px-3  text-sm placeholder:text-placeholder focus:ring-0 focus:ring-transparent md:whitespace-nowrap cursor-pointer leading-4 active:bg-background-100 transition;
   }
   .shad-select-content {
     @apply relative rounded-lg bg-background !important;
@@ -147,7 +150,7 @@
     @apply row-flex rounded-md border border-border bg-background-100 px-1 py-3.5 h-4 shadow-sm transition-all disabled:bg-opacity-50 disabled:bg-gray-400 max-[350px]:py-3;
   }
   .data-table {
-    @apply z-10 overflow-hidden rounded-lg border border-border-100 shadow-sm;
+    @apply z-10 bg-background overflow-hidden rounded-lg border border-border-100 shadow-sm;
   }
   .table-actions {
     @apply row-flex absolute bottom-4 right-3 gap-2 sm:gap-4 md:bottom-7 md:right-7;

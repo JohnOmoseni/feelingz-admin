@@ -8,23 +8,23 @@ import "@/styles/utils.css";
 import AppRouter from "./AppRouter";
 
 const AppWrapper = () => {
-	const navigate = useNavigate();
+  const navigate = useNavigate();
 
-	return (
-		<AuthProvider navigate={navigate}>
-			<Provider>
-				<AppRouter />
-			</Provider>
-		</AuthProvider>
-	);
+  return (
+    <AuthProvider navigate={navigate}>
+      <Provider>
+        <AppRouter />
+      </Provider>
+    </AuthProvider>
+  );
 };
 
 function App() {
-	return (
-		<Router>
-			<AppWrapper />
-		</Router>
-	);
+  return (
+    <Router>
+      <AppWrapper />
+    </Router>
+  );
 }
 
 export default App;

@@ -38,7 +38,11 @@ const SelectDropdown = ({
       defaultValue={defaultValue?.value}
     >
       <SelectTrigger className={cn("shad-select-trigger justify-between", triggerStyles)}>
-        {trigger ? trigger : <SelectValue placeholder={placeholder || "Select"} />}
+        {trigger ? (
+          trigger
+        ) : (
+          <SelectValue title={placeholder as string} placeholder={placeholder || "Select"} />
+        )}
       </SelectTrigger>
       <SelectContent className="shad-select-content">
         {options?.length > 0 &&

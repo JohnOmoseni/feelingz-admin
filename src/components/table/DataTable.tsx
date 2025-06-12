@@ -9,18 +9,11 @@ import {
   ColumnFiltersState,
   getPaginationRowModel,
 } from "@tanstack/react-table";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { ArrowDown, ArrowUp } from "@/constants/icons";
-import { useEffect, useState } from "react";
-import TablePaginate from "./TablePaginate";
+import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
+import { ReactNode, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import TablePaginate from "./TablePaginate";
+import FallbackLoader from "../fallback/FallbackLoader";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -28,10 +21,9 @@ interface DataTableProps<TData, TValue> {
   columnFilters?: ColumnFiltersState;
   globalFilter?: any;
   setSelectedRows?: (rows: TData[]) => void;
-  headerRowStyles?: string;
-  cellStyles?: string;
   hidePageCountDropdown?: boolean;
-  pageSize?: number;
+  emptyState?: ReactNode;
+  isLoading?: boolean;
 }
 
 export function DataTable<TData, TValue>({
@@ -40,10 +32,8 @@ export function DataTable<TData, TValue>({
   columnFilters,
   globalFilter,
   setSelectedRows,
-  headerRowStyles,
-  hidePageCountDropdown,
-  cellStyles,
-  pageSize = 10,
+  emptyState,
+  isLoading,
 }: DataTableProps<TData, TValue>) {
   const [data, setData] = useState(tableData);
   const [sorting, setSorting] = useState<ColumnSort[]>([]);
@@ -59,7 +49,7 @@ export function DataTable<TData, TValue>({
       globalFilter,
     },
     initialState: {
-      pagination: { pageSize },
+      pagination: { pageSize: 10 },
     },
     meta: {
       updateData: (rowIndex: string | number, columnId: string, value: string | number) =>
@@ -84,45 +74,16 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="flex-column gap-4">
-      <div className="data-table remove-scrollbar">
-        <Table className="remove-scrollbar small-text min-h-[100px] overflow-x-auto rounded-sm">
-          <TableHeader className="">
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className="">
-                {headerGroup.headers.map((header) => {
-                  const sortStatus = header.column.getIsSorted();
-                  const sortIcons = {
-                    asc: <ArrowUp className="size-4 w-auto" />,
-                    desc: <ArrowDown className="size-4 w-auto" />,
-                  };
-                  const sortIcon = sortStatus ? sortIcons[sortStatus] : "";
-
-                  return (
-                    <TableHead
-                      key={header.id}
-                      className={cn(
-                        "shad-table-row-header border-r !w-[10px] border-border-100",
-                        headerRowStyles
-                      )}
-                    >
-                      {header.isPlaceholder ? null : (
-                        <div
-                          className="row-flex-btwn gap-3 relative cursor-default font-semibold"
-                          onClick={header.column.getToggleSortingHandler()}
-                        >
-                          {flexRender(header.column.columnDef.header, header.getContext())}
-                          {header.column.getCanSort() && sortIcon}
-                        </div>
-                      )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-
+      <div className="data-table">
+        <Table className="remove-scrollbar min-h-[100px] overflow-x-auto rounded-sm">
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {isLoading ? (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="relative h-44">
+                  <FallbackLoader loading />
+                </TableCell>
+              </TableRow>
+            ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row?.id}
@@ -132,10 +93,7 @@ export function DataTable<TData, TValue>({
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}
-                      className={cn(
-                        "border border-border-100 max-sm:py-3 max-sm:px-4 last:border-0 first:border-0",
-                        cellStyles
-                      )}
+                      className={cn("max-sm:py-3 max-sm:px-4 last:border-0 first:border-0")}
                     >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
@@ -144,8 +102,8 @@ export function DataTable<TData, TValue>({
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-32 text-center">
-                  No results.
+                <TableCell colSpan={columns.length} className="h-44 text-center">
+                  {emptyState || "No results."}
                 </TableCell>
               </TableRow>
             )}
@@ -153,7 +111,7 @@ export function DataTable<TData, TValue>({
         </Table>
       </div>
 
-      <TablePaginate table={table} hidePageCountDropdown={hidePageCountDropdown} />
+      <TablePaginate table={table} />
     </div>
   );
 }

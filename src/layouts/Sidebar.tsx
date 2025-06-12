@@ -8,16 +8,14 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { setActiveTab } from "@/redux/features/appSlice";
 import { useDispatch } from "react-redux";
-import { logo } from "@/constants/icons";
+import { Logo } from "@/constants/icons";
 
 type SidebarProps = SidebarLinksProp;
 
 const LinkRow = ({ href, icon: Icon, label, tag }: SidebarProps) => {
-  const link =
-    "group relative w-full row-flex-start leading-3 p-2.5 bg-secondary rounded-md whitespace-nowrap transition-all";
+  const link = "group relative w-full row-flex-start leading-3 py-3.5 px-3.5 transition";
   const linkInner =
-    "grid grid-cols-[max-content_auto] items-center w-full gap-1.5 font-semibold transition-all";
-  const activeLink = cn("text-secondary-foreground font-semibold");
+    "grid grid-cols-[max-content_auto] items-center text-secondary-foreground gap-2 font-semibold cursor-pointer group-hover:scale-105 transition-all transition-colors";
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -30,16 +28,13 @@ const LinkRow = ({ href, icon: Icon, label, tag }: SidebarProps) => {
   };
 
   return (
-    <li title={tag} className={cn(link, isActive && "brightness-[1.15]")}>
-      <div
-        className={cn(linkInner, "cursor-pointer group-hover:scale-105")}
-        onClick={() => handleNavigate()}
-      >
-        {Icon && <Icon className={cn("size-5", isActive && "size-5")} />}
+    <li title={tag} className={cn(link, isActive && "border-l-2 border-accent bg-[#222]")}>
+      <div className={cn(linkInner)} onClick={() => handleNavigate()}>
+        {Icon && <Icon className={cn("size-5", isActive && "stroke-variant")} />}
         <span
           className={cn(
-            "text-[1rem] font-normal text-gray-200 tracking-wide",
-            isActive && activeLink
+            "leading-6 font-normal tracking-wide ",
+            isActive && "font-semibold text-accent"
           )}
         >
           {label}
@@ -54,10 +49,10 @@ function Sidebar() {
 
   return (
     <>
-      <div className="row-flex mt-2 w-full overflow-hidden">
-        <img src={logo} className="w-fit h-20" />
+      <div className="row-flex mt-5 w-full overflow-hidden">
+        <Logo className="w-[80] h-fit" />
       </div>
-      <motion.div className="flex size-full pt-7 px-4">
+      <motion.div className="flex size-full pt-7 md:pt-12">
         <ul className="flex-column w-full gap-3">
           {sidebarLinks.map((link, idx) => {
             const isLinkAllowed = link?.showAlways || (role && link.allowedRoles.includes(role));

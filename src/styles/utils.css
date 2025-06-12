@@ -1,10 +1,7 @@
 /* POPOVERS */
-[data-radix-popper-content-wrapper] {
-  left: -0.3rem;
-}
 
-[data-radix-popper-content-wrapper]:has(.modal-popover-content) {
-  left: -3.5rem !important;
+[data-radix-popper-content-wrapper]:has(.header-dropdown) {
+  top: 16px !important;
 }
 
 /* Remove scrollbar */
@@ -39,7 +36,7 @@
 
 /* SVGS */
 .stroke-variant * {
-  stroke: var(--secondary) !important;
+  stroke: var(--accent) !important;
 }
 
 /* =====  REACT PHONE NUMBER INPUT OVERRIDES */
@@ -52,10 +49,6 @@
 
 .PhoneInputCountry {
   padding-inline: 0.7rem 0.4rem !important;
-}
-
-.PhoneInputCountryIconImg {
-  /* display: none !important; */
 }
 
 .PhoneInputCountrySelectArrow {

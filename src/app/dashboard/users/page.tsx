@@ -1,139 +1,71 @@
 import { DataTable } from "@/components/table/DataTable";
-import { useState } from "react";
-import { Modal } from "@/components/ui/components/Modal";
-import { Plus } from "@/constants/icons";
+import { useCallback, useMemo, useState } from "react";
+import { useGetAllUsers } from "@/server/actions/users/useUsers";
+import { SlidingTabs } from "@/components/tabs/SlidingTabs";
+import { TabIDS } from "@/types";
 import { usersColumn } from "@/components/table/columns/userColumn";
-import { useGetAllUsers } from "@/hooks/useUser";
-import { toast } from "sonner";
 
 import TableGlobalSearch from "@/components/table/TableGlobalSearch";
-import Button from "@/components/reuseables/CustomButton";
-import Filters from "@/components/table/filters";
 import SectionWrapper from "@/layouts/SectionWrapper";
-import AddAminForm from "@/components/forms/AddAdmin";
-import DownloadReport from "@/components/reuseables/DownloadReport";
-import SkeletonLoader from "@/components/fallback/SkeletonLoader";
+import useEmptyState from "@/hooks/useEmptyState";
 
-const statusOptions = [
-  { label: "All", value: "all" },
-  { label: "Active", value: "active" },
-  { label: "Inactive", value: "inactive" },
+const tabIDs: any = [
+  {
+    label: "All Users",
+    value: "all",
+  },
+  { label: "Pending Approval", value: "inactive" },
+  { label: "Active Users", value: "active" },
+  { label: "Suspended Users", value: "banned" },
 ];
 
 function Users() {
-  const [selectedFilter, setSelectedFilter] = useState("");
   const [globalFilter, setGlobalFilter] = useState("");
   const [columnFilters, setColumnFilters] = useState([]);
-  const [openModal, setOpenModal] = useState<false | "add">(false);
 
-  const { data: users, isFetching, isError, error } = useGetAllUsers();
+  const { data: users, isError, error, isLoading: isFetchingUsers } = useGetAllUsers();
 
-  if (isError) toast.error((error as any)?.response?.data?.message || "Error fetching information");
+  const { emptyState } = useEmptyState({
+    data: users,
+    isError,
+    error,
+  });
 
-  // const userStats = [
-  //   {
-  //     label: "Total Users Registered",
-  //     value: "75,620",
-  //   },
-  //   {
-  //     label: "Active Users",
-  //     value: "5,620",
-  //   },
-  //   {
-  //   {
-  //     label: "New Users",
-  //     value: "28",
-  //     status: "neutral",
-  //   },
-  // ];
+  const [activeTab, setActiveTab] = useState<TabIDS>("all");
 
-  const isDownloading = false;
+  const changeTab = useCallback((value: TabIDS) => {
+    setActiveTab(value);
+    setColumnFilters((prev: any) =>
+      prev?.filter((filter: any) => filter.id !== "status")?.concat({ id: "status", value })
+    );
+  }, []);
+
+  const tableData = useMemo(() => users || [], [users]);
+
   return (
     <>
-      <SectionWrapper
-        headerTitle={"Users"}
-        customHeaderContent={
-          <div className="row-flex gap-3">
-            <DownloadReport
-              data={users || []}
-              filename={"Users.xlsx"}
-              trigger={
-                <>
-                  <Button title={isDownloading ? "downloading" : "Export"} />
-                </>
-              }
-            />
+      <SectionWrapper headerTitle={"User Management"}>
+        <TableGlobalSearch
+          globalValue={globalFilter}
+          placeholder="Search users by email address..."
+          onChange={(value: string) => setGlobalFilter(value)}
+        />
 
-            <Button
-              icon={Plus}
-              title="Add Admin"
-              className="!w-max"
-              onClick={() => setOpenModal("add")}
-            />
-          </div>
-        }
-      >
-        {isFetching ? (
-          <SkeletonLoader hideCardLoading={true} hideChartLoading={true} />
-        ) : (
-          <>
-            {/* <div className="grid sm:grid-cols-3 gap-4 sm:gap-5">
-              {userStats?.length &&
-                userStats.map(({ label, value, status }, idx) => (
-                  <Card
-                    key={idx}
-                    label={label}
-                    value={value}
-                    idx={idx}
-                    status={status as "high" | "low"}
-                  />
-                ))}
-            </div> */}
+        <div className="row-flex-start mt-3 gap-4 w-fit border-b border-border-100">
+          <SlidingTabs activeTab={activeTab} changeTab={changeTab} tabIDs={tabIDs} />
+        </div>
 
-            <div className="row-flex-btwn card !p-3">
-              <TableGlobalSearch
-                globalValue={globalFilter || ""}
-                onChange={(value: string) => setGlobalFilter(value)}
-              />
-
-              <div className="row-flex">
-                <Filters
-                  placeholder="Status"
-                  columnId="status"
-                  showAsDropdown={true}
-                  options={statusOptions}
-                  isArrowDown={true}
-                  selectedFilter={selectedFilter}
-                  setSelectedFilter={setSelectedFilter}
-                  setColumnFilters={setColumnFilters}
-                />
-              </div>
-            </div>
-
-            <div className="mt-6">
-              <DataTable
-                columns={usersColumn}
-                tableData={users || []}
-                globalFilter={globalFilter}
-                columnFilters={columnFilters}
-              />
-            </div>
-          </>
-        )}
+        <div className="mt-6">
+          <DataTable
+            columns={usersColumn}
+            tableData={tableData}
+            isLoading={isFetchingUsers}
+            {...(isError || !tableData.length ? { emptyState } : {})}
+            globalFilter={globalFilter}
+            columnFilters={columnFilters}
+          />
+        </div>
       </SectionWrapper>
-
-      {openModal === "add" && (
-        <Modal
-          openModal={openModal === "add"}
-          setOpenModal={() => setOpenModal(false)}
-          modalStyles="max-w-xl max-h-[550px]"
-          title="Add Admin"
-        >
-          <div className="mt-6 px-0.5">
-            <AddAminForm closeModal={() => setOpenModal(false)} />
-          </div>
-        </Modal>
-      )}
     </>
   );
 }

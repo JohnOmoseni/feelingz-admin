@@ -8,7 +8,6 @@ import {
 } from "react-icons/io5";
 import { FcGoogle as Google } from "react-icons/fc";
 import { BiDotsVertical as VerticalDots } from "react-icons/bi";
-
 import { IoIosArrowBack as ArrowBack } from "react-icons/io";
 import { FcCancel as Cancel } from "react-icons/fc";
 import { SlBell as Bell } from "react-icons/sl";
@@ -17,6 +16,7 @@ import {
   FiArrowDown as ArrowDown,
   FiArrowLeft as ArrowLeft,
   FiArrowRight as ArrowRight,
+  FiPlus as Plus,
 } from "react-icons/fi";
 import {
   MdOutlineKeyboardArrowLeft as KeyboardArrowLeft,
@@ -27,32 +27,28 @@ import {
 import { PiDotsThreeOutlineFill as ThreeDots } from "react-icons/pi";
 import { BiSearchAlt as SearchIcon } from "react-icons/bi";
 import { HiOutlineEnvelope as Envelope } from "react-icons/hi2";
-import { GoLock as Lock } from "react-icons/go";
-import { FiPlus as Plus } from "react-icons/fi";
 import { CiCircleCheck as CheckCircle, CiFilter as FilterIcon } from "react-icons/ci";
-import { FaCheck as Check } from "react-icons/fa6";
-import { GoArrowUpRight as ArrowUpRight } from "react-icons/go";
-import { FaArrowTrendUp as TrendUp, FaArrowTrendDown as TrendDown } from "react-icons/fa6";
-import { MdOutlineTrendingFlat as TrendFlat } from "react-icons/md";
+import { GoArrowUpRight as ArrowUpRight, GoLock as Lock } from "react-icons/go";
+import {
+  FaArrowTrendUp as TrendUp,
+  FaArrowTrendDown as TrendDown,
+  FaArrowTrendDown as Remove,
+  FaCheck as Check,
+} from "react-icons/fa6";
+
+import { Loader2 as LoadMoreIcon } from "lucide-react";
 
 export { default as SuccessIcon } from "../assets/svgs/success.svg?react";
 export { default as FileUploadIcon } from "../assets/svgs/file-upload.svg?react";
 export { default as Logout } from "../assets/svgs/logout.svg?react";
 export { default as Dashboard } from "../assets/svgs/dashboard.svg?react";
-export { default as Property } from "../assets/svgs/property.svg?react";
-export { default as Car } from "../assets/svgs/car.svg?react";
 export { default as User } from "../assets/svgs/user.svg?react";
-export { default as UserComplaint } from "../assets/svgs/complaint.svg?react";
-export { default as Category } from "../assets/svgs/user-complaint.svg?react";
-export { default as Analytics } from "../assets/svgs/analytics.svg?react";
-export { default as Chat } from "../assets/svgs/chat.svg?react";
 export { default as Settings } from "../assets/svgs/settings.svg?react";
 export { default as UserAvatar } from "../assets/svgs/user-avatar.svg?react";
-export { default as Remove } from "../assets/svgs/remove-circle.svg?react";
 export { default as Logo } from "../assets/svgs/logo.svg?react";
 
-import house from "/images/house.png";
 import profile from "/images/profile.png";
+import fallback_profile from "/images/profile.png";
 import logo from "/images/logo.png";
 
 export {
@@ -62,10 +58,12 @@ export {
   Copy,
   ArrowUp,
   ArrowDown,
+  Remove,
   ArrowLeft,
   ArrowRight,
   ArrowBack,
   ArrowUpRight,
+  LoadMoreIcon,
   KeyboardArrowLeft,
   KeyboardArrowRight,
   KeyboardArrowDown,
@@ -85,9 +83,8 @@ export {
   EyeOff,
   TrendUp,
   TrendDown,
-  TrendFlat,
   Lock,
-  house,
   profile,
   logo,
+  fallback_profile,
 };

@@ -1,6 +1,5 @@
-import api from "../axios";
-import APIURLS, { API_DOMAIN } from "../apiUrls";
-import axios, { AxiosResponse } from "axios";
+import api, { baseApi } from "../axios";
+import { AxiosResponse } from "axios";
 import { handleApiError } from "@/lib/index";
 
 const login = async (params: {
@@ -8,7 +7,7 @@ const login = async (params: {
   password: string;
 }): Promise<AxiosResponse["data"]> => {
   try {
-    const response = await axios.post(`${API_DOMAIN}/login`, params);
+    const response = await baseApi.post(`/auth/login`, params);
 
     return response.data;
   } catch (error) {
@@ -18,7 +17,7 @@ const login = async (params: {
 
 const getAuthUser = async (): Promise<AxiosResponse["data"]> => {
   try {
-    const response = await api.get(APIURLS.GET_AUTH_USER);
+    const response = await api.get("/user");
     console.log("AUTH USER RESPONSE", response);
 
     return response.data;
@@ -28,17 +27,24 @@ const getAuthUser = async (): Promise<AxiosResponse["data"]> => {
 };
 
 const verifyOtp = async (params: {
-  otp: number;
+  user_id: string;
+  token: number;
+}): Promise<AxiosResponse["data"]> => {
+  try {
+    const response = await baseApi.post(`/auth/email/verify`, params);
+
+    return response?.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+const verifyResetPasswordOtp = async (params: {
+  token: number;
   email: string;
 }): Promise<AxiosResponse["data"]> => {
-  const payload = {
-    token: String(params.otp),
-    email: params.email,
-  };
-
   try {
-    const response = await api.post(APIURLS.VERIFY_OTP, payload);
-    console.log("VERIFY OTP RESPONSE", response);
+    const response = await baseApi.post(`/auth/password/verify`, params);
 
     return response.data;
   } catch (error) {
@@ -46,22 +52,26 @@ const verifyOtp = async (params: {
   }
 };
 
-const resendOtp = async (): Promise<AxiosResponse["data"]> => {
+const resendOtp = async (
+  params: {
+    email: string;
+    user_id: string;
+  },
+  signal?: AbortSignal
+): Promise<AxiosResponse["data"]> => {
   try {
-    const response = await api.get(APIURLS.RESEND_OTP);
-    console.log("RESEND OTP RESPONSE", response);
-
+    const response = await baseApi.post(`/auth/email/resend`, params, {
+      signal,
+    });
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     handleApiError(error);
   }
 };
 
 const forgotPassword = async (params: { email: string }): Promise<AxiosResponse["data"]> => {
   try {
-    const response = await api.post(APIURLS.FORGOT_PASSWORD, params);
-    console.log("FORGOT PASSWORD RESPONSE", response);
-
+    const response = await baseApi.post("/auth/password/forgot", params);
     return response.data;
   } catch (error) {
     handleApiError(error);
@@ -69,13 +79,23 @@ const forgotPassword = async (params: { email: string }): Promise<AxiosResponse[
 };
 
 const resetPassword = async (params: {
-  email: string;
   password: string;
-  otp: string;
+  password_confirmation: string;
+  reset_token: string;
 }): Promise<AxiosResponse["data"]> => {
   try {
-    const response = await api.post(APIURLS.RESET_PASSWORD, params);
-    console.log("RESET PASSWORD RESPONSE", response);
+    const response = await baseApi.put(
+      "/auth/password/reset",
+      {
+        password: params.password,
+        password_confirmation: params.password_confirmation,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${params.reset_token}`,
+        },
+      }
+    );
 
     return response.data;
   } catch (error) {
@@ -85,21 +105,7 @@ const resetPassword = async (params: {
 
 const logout = async (): Promise<AxiosResponse["data"]> => {
   try {
-    const response = await api.post(APIURLS.LOGOUT);
-    console.log("LOGOUT RESPONSE", response);
-
-    return response.data;
-  } catch (error) {
-    handleApiError(error);
-  }
-};
-
-const refreshAccessToken = async (params?: {
-  refresh_token: string;
-}): Promise<AxiosResponse["data"]> => {
-  try {
-    const response = await api.post(APIURLS.REFRESH_TOKEN, params);
-    console.log("REFRESH TOKEN RESPONSE", response);
+    const response = await api.post("/logout");
 
     return response.data;
   } catch (error) {
@@ -113,7 +119,7 @@ export const authApi = {
   getAuthUser,
   verifyOtp,
   resendOtp,
+  verifyResetPasswordOtp,
   forgotPassword,
   resetPassword,
-  refreshAccessToken,
 };

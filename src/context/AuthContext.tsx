@@ -8,24 +8,30 @@ import {
 } from "react";
 import api from "@/server/axios";
 import { toast } from "sonner";
-import { routes } from "@/constants";
+import { routes, ssCurrentUser, ssToken } from "@/constants";
 import { authApi } from "@/server/actions/auth";
 import { APP_ROLES, User } from "@/types";
 import { NavigateFunction } from "react-router-dom";
 import { Alert } from "@/constants/icons";
 import { useCallback } from "react";
+import { showToast } from "@/lib/utils";
+import { extractErrorMessage } from "@/lib/errorUtils";
 
 type AuthContextType = {
   user?: User | null;
   token?: string | null;
   role?: (typeof APP_ROLES)[keyof typeof APP_ROLES] | string | null;
-  handleLogin: (email: string, password: string) => Promise<void>;
-  handleVerifyOtp: (otp: number, email: string) => Promise<void>;
-  handleResendOtp: (email: string) => Promise<void>;
+  handleLogin: (email: string, password: string, returnTo?: string) => Promise<void>;
+  handleVerifyOtp: (user_id: string, token: number) => Promise<void>;
+  handleResendOtp: (
+    email: string,
+    user_id: string,
+    options?: { signal?: AbortSignal }
+  ) => Promise<void>;
   handleForgotPassword: (email: string) => Promise<void>;
+  handleVerifyPasswordPin: (token: number, email: string) => Promise<void>;
   handleResetPassword: (email: string, password: string, otp: string) => Promise<void>;
   handleLogout: () => Promise<void>;
-  isAuthenticated?: boolean;
   isLoadingAuth?: boolean;
 };
 
@@ -38,198 +44,227 @@ type AuthProviderType = PropsWithChildren & {
 export default function AuthProvider({ children, navigate, ...props }: AuthProviderType) {
   const [user, setUser] = useState<User | null>();
   const [token, setToken] = useState<string | null>();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoadingAuth, setIsLoadingAuth] = useState(false);
   const [role, setRole] = useState<(typeof APP_ROLES)[keyof typeof APP_ROLES] | string | null>();
+  const [isLoadingAuth, setIsLoadingAuth] = useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const res = await authApi.getAuthUser();
 
-        if (!res?.status) throw new Error(res?.message || "Error getting Auth User");
+        if (res?.status !== 200)
+          throw new Error(res?.message || "Error getting authenticated user");
 
-        const { user, token: authToken } = res.data;
-        const currentUser = setUserSession(user, authToken);
+        const token = sessionStorage.getItem(ssToken);
+        let parsedToken = "";
+        try {
+          parsedToken = token ? JSON.parse(token) : "";
+        } catch (parseError) {
+          console.error("Token parsing error:", parseError);
+          throw new Error("Invalid session token");
+        }
+        const currentUser = setUserSession(res.data, parsedToken);
 
-        if (!currentUser.otpVerified) {
+        if (!currentUser.is_email_verified) {
           navigate("/verify-otp");
         } else {
-          navigate("/dashboard");
+          navigate("/");
         }
-      } catch (error) {
-        const storedUser = sessionStorage.getItem("admin-skymeasures-currentUser");
-        const token = sessionStorage.getItem("admin-skymeasures-token");
+      } catch (error: any) {
+        const storedUser = sessionStorage.getItem(ssCurrentUser);
+        const token = sessionStorage.getItem(ssToken);
 
-        if (storedUser && token) {
-          const currentUser = JSON.parse(storedUser);
-          setToken(JSON.parse(token));
-          setUser(currentUser);
-          setRole(currentUser.role);
-        } else {
+        try {
+          if (storedUser && token) {
+            const currentUser = JSON.parse(storedUser);
+            setToken(JSON.parse(token));
+            setUser(currentUser);
+          } else {
+            setToken(null);
+            setUser(null);
+            navigate("/signin");
+          }
+        } catch (parseError) {
+          console.error("Session storage parsing error:", parseError);
           setToken(null);
           setUser(null);
-          setRole(null);
+          navigate("/signin");
         }
       }
     };
-
     fetchUser();
   }, []);
 
   const setUserSession = useCallback(
-    (user: any, authToken: string) => {
+    (user: any, authToken: string): UserType => {
       const currentUser = {
+        ...user,
         userId: user.id,
-        name: user.name,
-        email: user.email,
-        phone: user.phone,
-        image: user.profile_picture,
-        otpVerified: user.is_verified || false,
-        role: user.role.includes("admin") ? "ADMIN" : "STAFF",
+        full_name: `${user.first_name || "Unknown"} ${user.last_name}`,
       };
 
-      setToken(authToken);
       setUser(currentUser);
-      setRole(currentUser.role);
+      setToken(authToken);
 
-      sessionStorage.setItem("admin-skymeasures-currentUser", JSON.stringify(currentUser));
-      sessionStorage.setItem("admin-skymeasures-token", JSON.stringify(authToken));
+      sessionStorage.setItem(ssToken, JSON.stringify(authToken));
+      sessionStorage.setItem(ssCurrentUser, JSON.stringify(currentUser));
 
       return currentUser;
     },
-    [setToken, setUser, setRole]
+    [setToken, setUser]
   );
 
-  const handleLogin = async (email: string, password: string) => {
+  const handleLogin = async (email: string, password: string, returnTo?: string) => {
     if (!email || !password) return;
     setIsLoadingAuth(true);
 
     try {
       const res = await authApi.login({ email, password });
 
-      if (!res?.status) throw new Error(res?.message || "Error Signing in");
-      const authToken = res?.data?.token;
-      const user = res?.data?.user;
+      if (!res?.data || res?.status !== 200) throw new Error(res?.message || "Error signing in");
 
-      if (user) setUserSession(user, authToken);
+      const user = res.data?.user;
+      const authToken = res.data?.token;
+      const message = "Logged In successfully";
 
-      if (!user?.is_verified) {
-        navigate("/verify-otp");
-        toast.success(res?.message || "Login successful. Please verify OTP.");
-      } else {
-        toast.success(res?.message || "Login successful.");
+      if (!user) throw new Error("Error signing in");
 
-        navigate("/dashboard");
-      }
+      setUserSession(user, authToken);
+
+      showToast("success", message);
+      navigate(returnTo || "/", { replace: true });
     } catch (error: any) {
       // null - request made and it failed
-      const errorMessage = error?.response?.data?.message;
       let message = "Error signing in";
-
-      console.log("TEST", error);
-
-      if (errorMessage?.includes("These credentials do not match our records")) {
-        message = errorMessage;
-      } else if (errorMessage?.includes("Bad Credentials")) {
-        message = "Incorrect password";
-      }
+      message = extractErrorMessage(error);
 
       setToken(null);
       setUser(null);
-      setRole(null);
-      toast.error(
-        <div className="row-flex-start gap-2">
-          <Alert className="size-5 text-red-500 self-start" />
-          <div className="flex-column gap-0.5">
-            <h3>{errorMessage || message}</h3> <p className="">{message}</p>
-          </div>
-        </div>
-      );
+      showToast("error", message);
     } finally {
       setIsLoadingAuth(false);
     }
   };
 
-  const handleVerifyOtp = async (otp: number, email: string) => {
-    if (!otp || !email) return;
+  const handleVerifyOtp = async (user_id: string, token: number) => {
+    if (!token || !user_id) return;
     setIsLoadingAuth(true);
 
     try {
-      const res = await authApi.verifyOtp({ otp, email });
+      const res = await authApi.verifyOtp({ user_id, token });
 
-      if (!res?.status) throw new Error(res?.message || "OTP verification failed");
+      if (res?.status !== 200) throw new Error(res?.message || "OTP verification failed");
 
-      const updatedUser = {
-        ...(user as User),
-        otpVerified: true,
-      };
+      const user = res.data?.user;
+      const authToken = res.data?.token;
 
-      sessionStorage.setItem("admin-skymeasures-currentUser", JSON.stringify(updatedUser));
-      setUser(updatedUser);
+      if (!user) throw new Error("Error signing in");
 
-      toast.success("OTP verified successfully. Redirecting to dashboard...");
-
-      navigate("/dashboard");
+      setUserSession(user, authToken);
+      navigate("/", {
+        replace: true,
+      });
     } catch (error: any) {
-      const errorMessage = error?.response?.data?.message;
-      toast.error(errorMessage || "Failed to verify OTP. Please try again.");
-      throw new Error(errorMessage || "Failed to verify OTP.");
+      const errorMessage = error?.message || "Failed to verify OTP. Please try again.";
+
+      showToast("error", errorMessage);
     } finally {
       setIsLoadingAuth(false);
     }
   };
 
-  const handleResendOtp = async (email: string) => {
-    if (!email) return;
-
+  const handleResendOtp = async (
+    email: string,
+    user_id: string,
+    options?: { signal?: AbortSignal }
+  ) => {
+    if (!email || !user_id) return;
     try {
-      const res = await authApi.resendOtp();
+      const res = await authApi.resendOtp({ email, user_id }, options?.signal);
+      if (res?.status !== 200) throw new Error(res?.message || "Failed to resend OTP");
 
-      if (!res?.status) throw new Error(res?.message || "Failed to resend OTP");
-      toast.success("OTP resent successfully");
+      const message = res?.message || "OTP resent successfully.";
+      showToast("success", message);
     } catch (error: any) {
-      const errorMessage = error?.response?.data?.message;
-
-      toast.error(errorMessage || "Failed to resend OTP");
+      if (error.name === "AbortError" || error.name === "CanceledError") {
+        console.log("OTP resend request canceled");
+        return;
+      }
+      const errorMessage = error?.message || "Failed to resend OTP";
+      showToast("error", errorMessage);
     }
   };
 
   const handleForgotPassword = async (email: string) => {
     if (!email) return;
     setIsLoadingAuth(true);
+    let message;
 
     try {
       const res = await authApi.forgotPassword({ email });
+      if (res?.status !== 200) throw new Error(res?.message || "Failed to reset password");
 
-      if (!res?.status) throw new Error(res?.message || "Error sending reset OTP");
-
-      toast.success(res?.message || "Password reset OTP has been sent successfully");
-      navigate("/change-password");
+      message = res?.message || "Email Sent successfully.";
+      showToast("success", message, "A 6-digit PIN has been sent to your email.");
+      navigate("/verify-pin", { state: { email } });
     } catch (error: any) {
-      const errorMessage = error?.response?.data?.message;
+      const errorMessage = error?.message || "Failed to reset password. Please try again.";
 
-      toast.error(errorMessage || "Error sending reset OTP");
+      showToast("error", errorMessage);
     } finally {
       setIsLoadingAuth(false);
     }
   };
 
-  const handleResetPassword = async (email: string, password: string, otp: string) => {
-    if (!email || !password || !otp) return;
+  const handleVerifyPasswordPin = async (token: number, email: string) => {
+    if (!token || !email) return;
     setIsLoadingAuth(true);
 
     try {
-      const res = await authApi.resetPassword({ email, password, otp });
+      const res = await authApi.verifyResetPasswordOtp({ token, email });
 
-      if (!res?.status) throw new Error(res?.message || "Failed to reset password");
+      if (!res?.data || res?.status !== 200)
+        throw new Error(res?.message || "Failed to verify pin");
+      const message = res.message || "PIN verified successfully.";
+      const reset_token = res.data?.token;
 
-      toast.success("Password reset successful");
-      navigate("/change-password/success");
+      showToast("success", message);
+      navigate("/update-password", {
+        state: { reset_token },
+      });
     } catch (error: any) {
-      const errorMessage = error?.response?.data?.message;
+      const errorMessage = error?.message || "Failed to verify pin. Please try again.";
+      showToast("error", errorMessage);
+    } finally {
+      setIsLoadingAuth(false);
+    }
+  };
 
-      toast.error(errorMessage || "Failed to reset password");
+  const handleResetPassword = async (
+    password: string,
+    password_confirmation: string,
+    reset_token: string
+  ) => {
+    if (!password || !password_confirmation) return;
+    setIsLoadingAuth(true);
+
+    let message;
+
+    try {
+      const res = await authApi.resetPassword({
+        password,
+        password_confirmation,
+        reset_token,
+      });
+
+      if (res?.status !== 200) throw new Error(res?.message || "Failed to reset	password");
+
+      message = res?.message || "Password reset successful.";
+      showToast("success", message);
+      navigate("/signin");
+    } catch (error: any) {
+      const errorMessage = error?.message || "Failed to reset password. Please try again.";
+      showToast("error", errorMessage);
     } finally {
       setIsLoadingAuth(false);
     }
@@ -241,9 +276,9 @@ export default function AuthProvider({ children, navigate, ...props }: AuthProvi
       setToken(null);
       setUser(null);
       setRole(null);
-      setIsAuthenticated(false);
-      sessionStorage.removeItem("admin-skymeasures-currentUser");
-      sessionStorage.removeItem("admin-skymeasures-token");
+      false;
+      sessionStorage.removeItem(ssCurrentUser);
+      sessionStorage.removeItem(ssToken);
 
       toast.success("Logged out successfully");
       navigate(routes.LOGIN);
@@ -282,12 +317,10 @@ export default function AuthProvider({ children, navigate, ...props }: AuthProvi
         if (error?.response?.status === 403 && error?.response?.message === "Unauthorized") {
           originalRequest._retry = true;
           try {
-            const response = await authApi.refreshAccessToken();
-            setToken(response.data?.accessToken);
-
-            originalRequest.headers.Authorization = `Bearer ${response.data?.accessToken}`;
-
-            return api.request(originalRequest);
+            // const response = await authApi.refreshAccessToken();
+            // setToken(response.data?.accessToken);
+            // originalRequest.headers.Authorization = `Bearer ${response.data?.accessToken}`;
+            // return api.request(originalRequest);
           } catch (error) {
             console.error("Failed to refresh token:", error);
           }
@@ -308,12 +341,12 @@ export default function AuthProvider({ children, navigate, ...props }: AuthProvi
         user,
         token,
         role,
-        isAuthenticated,
         isLoadingAuth,
         handleLogin,
         handleLogout,
         handleVerifyOtp,
         handleResendOtp,
+        handleVerifyPasswordPin,
         handleForgotPassword,
         handleResetPassword,
       }}

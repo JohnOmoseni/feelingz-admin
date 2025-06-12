@@ -36,44 +36,43 @@ function ForgotPassword() {
       <div className="absolute -top-[45px] left-1">
         <BackArrow />
       </div>
-      <div className="flex-column gap-1">
-        <h2 className="text-2xl md:text-3xl">Forgot your password</h2>
-        <p className="leading-5 mt-1 tracking-wide text-foreground-100 w-full">
+
+      <div className="flex-column items-center gap-2">
+        <h2 className="text-2xl text-center">Forgot your password</h2>
+        <p className="tracking-tighter text-center text-foreground-100 font-light">
           Forgot your password? Enter your email to receive a One Time Password (OTP)
         </p>
       </div>
 
-      <div className="pt-4">
-        <form onSubmit={handleSubmit} className="flex-column flex-1 gap-9">
-          <div className="flex-column gap-5">
-            <CustomFormField
-              fieldType={FormFieldType.INPUT}
-              name="email"
-              label="Email address"
-              field={{
-                value: values.email,
-                placeholder: "",
-                type: "email",
-              }}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              errors={errors}
-              iconSrc={Envelope}
-              touched={touched}
-              tag="auth"
-              inputStyles="h-11"
-            />
-          </div>
-
-          <Button
-            type="submit"
-            title={isSubmitting ? "Sending..." : "Send"}
-            className={cn("!mt-auto !w-full !py-5")}
-            disabled={isLoadingAuth}
-            isLoading={isLoadingAuth}
+      <form onSubmit={handleSubmit} className="flex-column flex-1 gap-9 w-full mt-3">
+        <div className="flex-column gap-5">
+          <CustomFormField
+            fieldType={FormFieldType.INPUT}
+            name="email"
+            label="Email address"
+            field={{
+              value: values.email,
+              placeholder: "",
+              type: "email",
+            }}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            errors={errors}
+            iconSrc={Envelope}
+            touched={touched}
+            tag="auth"
+            inputStyles="h-11"
           />
-        </form>
-      </div>
+        </div>
+
+        <Button
+          type="submit"
+          title={isSubmitting ? "Sending..." : "Send"}
+          className={cn("!mt-auto !w-full !py-5")}
+          disabled={isLoadingAuth}
+          isLoading={isLoadingAuth}
+        />
+      </form>
     </>
   );
 }

@@ -3,71 +3,59 @@ import { CSSProperties, ReactNode } from "react";
 import ClipLoader from "react-spinners/ClipLoader";
 
 const override: CSSProperties = {
-	display: "block",
+  display: "block",
 };
 
 type LoaderProps = {
-	loading?: boolean;
-	label?: string;
-	spinner?: ReactNode;
-	containerStyles?: string;
+  loading?: boolean;
+  label?: string;
+  spinner?: ReactNode;
+  containerStyles?: string;
 };
 
-const FallbackLoader = ({
-	loading = true,
-	label,
-	spinner,
-	containerStyles,
-}: LoaderProps) => {
-	if (!loading) return null;
+const FallbackLoader = ({ loading = true, label, spinner, containerStyles }: LoaderProps) => {
+  if (!loading) return null;
 
-	return (
-		<div
-			className={cn(
-				"pointer-events-auto absolute inset-0 grid w-full select-none place-items-center",
-				containerStyles
-			)}
-			style={{ zIndex: 99 }}
-		>
-			<div className="row-flex-start gap-2">
-				{spinner ? (
-					spinner
-				) : (
-					<ClipLoader
-						color={"#398dfa"}
-						loading={loading}
-						cssOverride={override}
-						size={30}
-						aria-label="Loading"
-						data-testid="loader"
-					/>
-				)}
-				<h3 className="animate-pulse transition-all">
-					{label ?? "Loading..."}
-				</h3>
-			</div>
-		</div>
-	);
+  return (
+    <div
+      className={cn(
+        "pointer-events-auto absolute inset-0 grid w-full select-none place-items-center",
+        containerStyles
+      )}
+      style={{ zIndex: 99 }}
+    >
+      <div className="row-flex-start gap-2">
+        {spinner ? (
+          spinner
+        ) : (
+          <ClipLoader
+            color={"#398dfa"}
+            loading={loading}
+            cssOverride={override}
+            size={30}
+            aria-label="Loading"
+            data-testid="loader"
+          />
+        )}
+
+        {label && <h3 className="animate-pulse transition-all">{label ?? "Loading..."}</h3>}
+      </div>
+    </div>
+  );
 };
 
 export default FallbackLoader;
 
-export const BtnLoader = ({
-	color,
-	isLoading,
-}: {
-	color?: string;
-	isLoading: boolean;
-}) => {
-	return (
-		<ClipLoader
-			loading={isLoading}
-			size={18}
-			color={color || "red"}
-			cssOverride={override}
-			aria-label="Loading"
-			data-testid="loader"
-			className="row-flex mr-1.5 text-secondary"
-		/>
-	);
+export const BtnLoader = ({ color, isLoading }: { color?: string; isLoading: boolean }) => {
+  return (
+    <ClipLoader
+      loading={isLoading}
+      size={18}
+      color={color || "red"}
+      cssOverride={override}
+      aria-label="Loading"
+      data-testid="loader"
+      className="row-flex mr-1.5 text-secondary"
+    />
+  );
 };

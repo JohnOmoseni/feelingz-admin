@@ -35,7 +35,7 @@ export function Modal({
       <AlertDialogContent
         style={{ zIndex: 999 }}
         className={cn(
-          "shad-alert-dialog block scrollbar-thin mx-auto max-h-[580px] min-h-[200px] max-w-lg overflow-y-auto rounded-2xl p-4 shadow-lg max-sm:w-[85%] sm:min-w-[400px] sm:p-4 sm:px-5",
+          "shad-alert-dialog block scrollbar-thin mx-auto max-h-[550px] min-h-[200px] max-w-lg overflow-y-auto rounded-2xl p-4 shadow-lg max-sm:w-[85%] sm:min-w-[400px] sm:p-4 sm:px-5",
           modalStyles
         )}
       >
@@ -53,7 +53,7 @@ export function Modal({
         </div>
 
         <AlertDialogHeader>
-          <AlertDialogTitle className="text-xl sm:text-2xl">{title}</AlertDialogTitle>
+          <AlertDialogTitle className="max-sm:pr-4 sm:text-xl">{title}</AlertDialogTitle>
 
           <AlertDialogDescription
             className={cn(

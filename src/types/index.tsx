@@ -1,6 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "@/redux/store";
-import { FormFieldType } from "@/components/forms/CustomFormField";
 
 export const APP_ROLES = {
   Admin: "ADMIN",
@@ -54,28 +53,18 @@ export type TabsPanelProp = {
   children: React.ReactNode;
 };
 
+export type TabIDS = "all" | "pending" | "active" | "suspended";
+
 export type TabsProps = {
-  activeTab: number;
-  changeTab: (idx: number) => void;
-  tabIDs: string[];
+  activeTab: TabIDS;
+  changeTab: (value: TabIDS) => void;
+  tabIDs: { label: string; value: TabIDS }[];
 };
 
-export type TabProps = {
-  idx: number;
-  activeTab: number;
-  tab: string;
-  changeTab: (idx: number) => void;
+export type TabProps = Omit<TabsProps, "tabIDs"> & {
+  value: TabIDS;
+  tab: { label: string; value: TabIDS };
   className?: string;
-};
-
-export type DynamicFieldType = {
-  name: string;
-  label: string;
-  type: FormFieldType;
-  inputType?: string;
-  placeholder?: string;
-  required?: boolean;
-  options?: Array<{ value: string; label: string }>;
 };
 
 export const useAppSelector = useSelector.withTypes<RootState>();

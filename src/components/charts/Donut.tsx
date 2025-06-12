@@ -12,8 +12,6 @@ import {
 } from "@/components/ui/chart";
 import Ticker from "./Ticker";
 
-export const description = "An interactive pie chart";
-
 // @ts-ignore
 const desktopData = [
   { month: "january", desktop: 186, fill: "var(--color-january)" },
@@ -23,20 +21,13 @@ const desktopData = [
   { month: "may", desktop: 209, fill: "var(--color-may)" },
 ];
 
-const backendData = {
-  totalListing: 10,
-  approvedListing: 10,
-  rejectedListing: 20,
-  pendingListing: 60,
-};
-
 const chartConfig = {
-  approved: {
-    label: "Approved",
+  active: {
+    label: "Active",
     color: "hsl(var(--chart-1))",
   },
-  rejected: {
-    label: "Rejected",
+  suspended: {
+    label: "Suspended",
     color: "hsl(var(--chart-2))",
   },
   pending: {
@@ -48,11 +39,11 @@ const chartConfig = {
 const tickerObj = [
   {
     tickerStyles: "--chart-1",
-    label: "Approved",
+    label: "Active",
   },
   {
     tickerStyles: "--chart-2",
-    label: "Rejected",
+    label: "Suspended",
   },
   {
     tickerStyles: "--chart-3",
@@ -60,26 +51,39 @@ const tickerObj = [
   },
 ];
 
-export function DonutChart() {
+export function DonutChart({ data }: { data?: DasboardUserCountType }) {
   const id = "pie-interactive";
 
-  const chartData = [
-    {
-      label: chartConfig.approved.label,
-      value: backendData.approvedListing,
-      fill: chartConfig.approved.color,
-    },
-    {
-      label: chartConfig.rejected.label,
-      value: backendData.rejectedListing,
-      fill: chartConfig.rejected.color,
-    },
-    {
-      label: chartConfig.pending.label,
-      value: backendData.pendingListing,
-      fill: chartConfig.pending.color,
-    },
-  ];
+  const backendData = React.useMemo(
+    () => ({
+      totalUsers: data?.total || 0,
+      activeUsers: data?.Active || 0,
+      suspendedUsers: data?.Suspended || 0,
+      pendingUsers: data?.Pending || 0,
+    }),
+    [data]
+  );
+
+  const chartData = React.useMemo(
+    () => [
+      {
+        label: chartConfig.active.label,
+        value: backendData.activeUsers,
+        fill: chartConfig.active.color,
+      },
+      {
+        label: chartConfig.suspended.label,
+        value: backendData.suspendedUsers,
+        fill: chartConfig.suspended.color,
+      },
+      {
+        label: chartConfig.pending.label,
+        value: backendData.pendingUsers,
+        fill: chartConfig.pending.color,
+      },
+    ],
+    [chartConfig, backendData]
+  );
 
   const [activeSection] = React.useState(chartData[0].label);
 
@@ -93,7 +97,7 @@ export function DonutChart() {
   return (
     <Card data-chart={id} className="flex flex-col border-none">
       <ChartStyle id={id} config={chartConfig} />
-      <p className="text-sm text-grey">Total Listings Overview</p>
+      <p className="text-sm text-grey">Total Overview</p>
       <div className="flex flex-1 justify-center p-6 pb-4">
         <ChartContainer
           id={id}
@@ -142,7 +146,7 @@ export function DonutChart() {
                           y={(viewBox.cy || 0) + 24}
                           className="fill-muted-foreground"
                         >
-                          Listings
+                          Users
                         </tspan>
                       </text>
                     );

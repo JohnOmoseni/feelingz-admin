@@ -1,7 +1,7 @@
 import { Input } from "../ui/input";
 import { cn } from "@/lib/utils";
 import { FormikErrors, FormikTouched } from "formik";
-import { FocusEventHandler, KeyboardEventHandler, useState } from "react";
+import { FocusEventHandler, KeyboardEventHandler, ReactNode, useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Label } from "../ui/label";
 import { Eye, EyeOff } from "@/constants/icons";
@@ -36,6 +36,7 @@ interface CustomProps {
   dir?: "left" | "right";
   disabled?: boolean;
   selectList?: Array<any>;
+  selectTrigger?: ReactNode;
   labelStyles?: string;
   children?: React.ReactNode;
   errors?: FormikErrors<any>;
@@ -62,6 +63,7 @@ const RenderInput = ({ props }: { props: CustomProps }) => {
     selectContainerStyles,
     iconSrc: IconSrc,
     selectList,
+    selectTrigger,
   } = props;
   const placeholder = field?.placeholder ?? "";
 
@@ -126,10 +128,14 @@ const RenderInput = ({ props }: { props: CustomProps }) => {
           value={field?.value as string}
           defaultValue={field?.value as string}
         >
-          <SelectTrigger className="shad-select-trigger !bg-background-200 !border-none ">
-            <SelectValue
-              placeholder={<span className="text-placeholder">{placeholder || "Select"}</span>}
-            />
+          <SelectTrigger className="shad-select-trigger !border-none">
+            {selectTrigger ? (
+              selectTrigger
+            ) : (
+              <SelectValue
+                placeholder={<span className="text-placeholder">{placeholder || "Select"}</span>}
+              />
+            )}
           </SelectTrigger>
           <SelectContent className={cn("shad-select-content z-[999]", selectContainerStyles)}>
             {props.children}
@@ -185,19 +191,15 @@ const CustomFormField = (props: CustomProps) => {
   const { name, label, labelStyles, errors, touched, fieldType, containerStyles } = props;
 
   const result = ![FormFieldType.SKELETON, FormFieldType.CHECKBOX].includes(fieldType) ? (
-    <>
-      {label && <Label className={cn("ml-1 inline-flex opacity-70", labelStyles)}>{label}</Label>}
-
-      <div
-        className={cn(
-          "row-flex-start relative w-full gap-0.5 mt-2 overflow-hidden rounded-lg border border-border bg-background shadow-sm",
-          containerStyles,
-          errors?.[name] && touched?.[name] && "border-red-400"
-        )}
-      >
-        <RenderInput props={props} />
-      </div>
-    </>
+    <div
+      className={cn(
+        "row-flex-start relative w-full gap-0.5 mt-1.5 overflow-hidden rounded-lg border border-border-100 bg-background",
+        containerStyles,
+        errors?.[name] && touched?.[name] && "border-red-400"
+      )}
+    >
+      <RenderInput props={props} />
+    </div>
   ) : (
     <>
       <RenderInput props={props} />
@@ -206,6 +208,8 @@ const CustomFormField = (props: CustomProps) => {
 
   return (
     <div className={cn("group w-full", errors?.[name] && touched?.[name] ? "is-error" : "")}>
+      {label && <Label className={cn("ml-1 inline-flex opacity-70", labelStyles)}>{label}</Label>}
+
       {result}
 
       <p className="transition-sm hidden ml-1 mt-1.5 text-xs font-semibold text-red-500 group-[.is-error]:block group-[.is-error]:animate-in">

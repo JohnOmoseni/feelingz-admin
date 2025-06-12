@@ -4,17 +4,20 @@ import { FC } from "react";
 import ClipLoader from "react-spinners/ClipLoader";
 
 const buttonVariants = cva(
-  "row-flex sm:whitespace-nowrap leading-4 max-sm:text-sm max-sm:py-2 py-3 rounded-md border font-semibold capitalize tracking-wide subpixel-antialiased shadow-sm filter transition duration-150 active:translate-y-0.5 active:brightness-90 disabled:border-none disabled:pointer-events-none disabled:opacity-60 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "row-flex min-w-[80px] sm:whitespace-nowrap leading-4 text-sm sm:text-base rounded-md border font-semibold capitalize tracking-wide subpixel-antialiased shadow-sm filter transition duration-150 active:translate-y-0.5 active:brightness-90 disabled:border-none disabled:pointer-events-none disabled:opacity-60 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
         default:
-          "border-border-variant w-max bg-secondary text-secondary-foreground disabled:bg-grey-200",
+          "border-border-variant w-max bg-secondary-100 text-secondary-foreground disabled:bg-grey-200",
         outline: "border-border-100 text-foreground",
+        accent: "border-accent bg-current text-secondary-foreground",
+        badge: "bg-accent text-secondary-foreground w-max",
       },
       size: {
-        default: "sm:h-10 px-4",
+        default: "sm:h-10 px-4 max-sm:py-2 py-3",
         sm: "px-3",
+        badge: "px-3 py-2",
         lg: "md:py-4 2xl:h-12",
       },
     },
@@ -38,7 +41,7 @@ interface ButtonProps extends ButtonVariantsProps {
   onClick?: (e?: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
-const Button: FC<ButtonProps> = ({
+const CustomButton: FC<ButtonProps> = ({
   title,
   className,
   type = "button",
@@ -75,4 +78,4 @@ const Button: FC<ButtonProps> = ({
   );
 };
 
-export default Button;
+export default CustomButton;

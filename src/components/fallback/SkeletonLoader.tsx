@@ -1,9 +1,8 @@
 type SkeletonProps = {
   hideCardLoading?: boolean;
-  hideChartLoading?: boolean;
 };
 
-function SkeletonLoader({ hideCardLoading, hideChartLoading }: SkeletonProps) {
+function SkeletonLoader({ hideCardLoading }: SkeletonProps) {
   return (
     <div className="flex-column gap-5">
       {/* CARDS LOADER */}
@@ -20,23 +19,6 @@ function SkeletonLoader({ hideCardLoading, hideChartLoading }: SkeletonProps) {
               </div>
             </div>
           ))}{" "}
-        </div>
-      )}
-
-      {/* CHARTS LOADER */}
-      {!hideChartLoading && (
-        <div className="mt-4 flex-column sm:grid grid-cols-2 gap-7">
-          <div className="flex-column gap-6 card">
-            <h3 className="skeleton" />
-
-            <div className="!h-[220px] !w-full skeleton"></div>
-          </div>
-
-          <div className="flex-column gap-3 card ">
-            <h3 className="skeleton" />
-
-            <div className="!h-[220px] !w-full skeleton"></div>
-          </div>
         </div>
       )}
 

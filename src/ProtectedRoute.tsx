@@ -8,8 +8,6 @@ function ProtectedRoute({ children }: PropsWithChildren) {
   const { user, token } = useAuth();
   const navigate = useNavigate();
 
-  console.log("[Current user]", user);
-
   useLayoutEffect(() => {
     if (user === null || token === null) {
       // Redirect to login page
@@ -18,12 +16,12 @@ function ProtectedRoute({ children }: PropsWithChildren) {
     }
 
     if (user?.otpVerified === false) {
-      navigate(routes.VERIFY_OTP, { replace: true });
+      // navigate(routes.VERIFY_OTP, { replace: true });
       return;
     }
   }, [navigate, user]);
 
-  if (user === undefined) return <FallbackLoader />;
+  if (user === undefined) return <FallbackLoader label="Loading" />;
 
   return children;
 }

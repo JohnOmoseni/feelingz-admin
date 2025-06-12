@@ -3,38 +3,9 @@ import { isValidPhoneNumber } from "libphonenumber-js";
 
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/;
 
-export const SignUpSchema = yup.object().shape({
-  username: yup.string().required("Username is required"),
-  email: yup.string().email("Invalid email address").required("Email is required"),
-  password: yup.string().required("Password is required"),
-  confirm_password: yup
-    .string()
-    .oneOf([yup.ref("new_password"), undefined], "Passwords must match")
-    .required("Please confirm your new password"),
-});
-
 export const SignInSchema = yup.object().shape({
   email: yup.string().email("Invalid email address").required("Email is required"),
   password: yup.string().required("Password is required"),
-});
-
-export const PasswordSchema = yup.object().shape({
-  otpValue: yup
-    .string()
-    .matches(/^\d{4}$/, "OTP must be a 4-digit number")
-    .required("OTP is required"),
-  new_password: yup
-    .string()
-    .min(8, "New password must be at least 8 characters")
-    .matches(
-      passwordRegex,
-      "Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 digit, and 1 special character"
-    )
-    .required("Password is required"),
-  confirm_password: yup
-    .string()
-    .oneOf([yup.ref("new_password"), undefined], "Passwords must match")
-    .required("Please confirm your new password"),
 });
 
 export const AddAdminSchema = yup.object().shape({
@@ -55,17 +26,6 @@ export const AddAdminSchema = yup.object().shape({
       (value) => isValidPhoneNumber(value!, "NG") // Validate if it's a valid Nigerian phone number
     )
     .required("Phone Number is required"),
-});
-
-export const CategorySchema = yup.object().shape({
-  name: yup.string().required("Title is required"),
-  description: yup.string().min(5, "Description must be at least 5 characters"),
-  sub_category: yup.array().of(
-    yup.object().shape({
-      value: yup.string().required("Sub Category is required"),
-    })
-  ),
-  // .min(2, "At least two options are required"),
 });
 
 export const ProfileSchema = yup.object().shape({
@@ -125,3 +85,17 @@ export const PostSchema = yup
 
     return true;
   });
+
+export const AddStaffSchema = yup.object().shape({
+  firstName: yup
+    .string()
+    .min(2, "Name must be at least 2 characters")
+    .max(50, "Name must be at most 50 characters")
+    .required("Field is required"),
+  lastName: yup.string().min(2, "Name must be at least 2 characters").required("Field is required"),
+  email: yup.string().email("Invalid email address").required("Field is required"),
+  role: yup
+    .mixed()
+    .oneOf(["ADMIN", "STAFF"], "Role must be either 'Admin' or 'Staff'")
+    .required("Field is required"),
+});

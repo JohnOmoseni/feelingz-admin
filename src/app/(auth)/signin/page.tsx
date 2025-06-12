@@ -1,20 +1,20 @@
-import CustomFormField, { FormFieldType } from "@/components/forms/CustomFormField";
-import { Envelope, Lock } from "@/constants/icons";
-import { cn } from "@/lib/utils";
-import { SignInSchema } from "@/schema/validation";
 import { useFormik } from "formik";
 import { InferType } from "yup";
 import { useAuth } from "@/context/AuthContext";
-import { Link } from "react-router-dom";
-import Button from "@/components/reuseables/CustomButton";
+import { Link, useLocation } from "react-router-dom";
+import { Envelope, Lock } from "@/constants/icons";
+import { SignInSchema } from "@/schema/validation";
+import CustomButton from "@/components/reuseables/CustomButton";
+import CustomFormField, { FormFieldType } from "@/components/forms/CustomFormField";
 
 function SignIn() {
+  const location = useLocation();
   const { handleLogin, isLoadingAuth } = useAuth();
 
   const onSubmit = async (values: InferType<typeof SignInSchema>) => {
-    console.log("Form submitted:", values);
+    const returnTo = location.state?.returnTo || "/";
 
-    await handleLogin(values?.email, values?.password);
+    await handleLogin(values?.email, values?.password, returnTo);
   };
 
   const { values, errors, touched, isSubmitting, handleBlur, handleChange, handleSubmit } =
@@ -29,20 +29,18 @@ function SignIn() {
 
   return (
     <>
-      <div className="flex-column gap-0.5">
-        <h2 className="text-2xl md:text-3xl">Welcome back!</h2>
-        <p className="sm:whitespace-nowrap leading-5 tracking-wide mt-0.5 text-foreground-100">
-          Welcome, let’s sign you in to your account
-        </p>
+      <div className="flex-column items-center gap-1">
+        <h2 className="">Welcome back!</h2>
+        <p className="tracking-tighter text-foreground-100">Sign in to your account</p>
       </div>
 
-      <div className="pt-4">
-        <form onSubmit={handleSubmit} className="flex-column flex-1 gap-9">
+      <form onSubmit={handleSubmit} className="flex-column pt-3.5 w-full flex-1 gap-8">
+        <div>
           <div className="flex-column gap-5">
             <CustomFormField
               fieldType={FormFieldType.INPUT}
               name="email"
-              label="Email address"
+              label="Email"
               field={{
                 value: values.email,
                 placeholder: "",
@@ -54,7 +52,6 @@ function SignIn() {
               iconSrc={Envelope}
               touched={touched}
               tag="auth"
-              inputStyles="h-10"
             />
 
             <CustomFormField
@@ -71,25 +68,25 @@ function SignIn() {
               iconSrc={Lock}
               touched={touched}
               tag="auth"
-              inputStyles="h-10"
             />
           </div>
-          <Button
-            type="submit"
-            title={isSubmitting ? "Signing in..." : "Login"}
-            className={cn("!mt-auto !w-full !py-5")}
-            disabled={isLoadingAuth}
-            isLoading={isLoadingAuth}
-          />
-        </form>
 
-        <p className="leading-5 text-center mt-4 tracking-wide text-foreground-100 min-[500px]:whitespace-nowrap">
-          Forgot Password?{" "}
-          <Link to="/recover-password" className="text-secondary font-semibold">
-            Recover
-          </Link>
-        </p>
-      </div>
+          <p className="tracking-wide text-end leading-4 mt-3.5 text-xs">
+            Forgot Password?{" "}
+            <Link to="/recover-password" className="font-semibold">
+              Recover
+            </Link>
+          </p>
+        </div>
+
+        <CustomButton
+          type="submit"
+          title={isSubmitting ? "Signing in..." : "Sign in"}
+          disabled={isLoadingAuth}
+          isLoading={isLoadingAuth}
+          className="w-full mt-4"
+        />
+      </form>
     </>
   );
 }
