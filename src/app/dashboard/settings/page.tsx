@@ -19,7 +19,7 @@ function Settings() {
           <div className="flex-column w-full gap-3 card self-start !px-0">
             <h3 className="border-b pb-3 border-border px-4">Your Photo</h3>
 
-            <ProfilePic userImage={user?.image!} />
+            <ProfilePic userImage={user?.avatar!} />
           </div>
         </div>
       </SectionWrapper>
