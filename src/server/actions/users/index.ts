@@ -14,7 +14,7 @@ const getAllUsers = async (): Promise<AxiosResponse["data"]> => {
 
 const getUserByID = async (user_id: string): Promise<AxiosResponse["data"]> => {
   try {
-    const response = await api.get(`/admin/${user_id}`);
+    const response = await api.get(`/admin/${user_id}/users`);
 
     return response.data;
   } catch (error) {
@@ -48,9 +48,7 @@ const mutateUser = async ({
   }
 };
 
-const notifyUser = async (user: any): Promise<AxiosResponse["data"]> => {
-  const payload = user;
-
+const notifyUser = async (payload: { email: string }): Promise<AxiosResponse["data"]> => {
   try {
     const response = await api.post(`/admin/notify`, payload);
 

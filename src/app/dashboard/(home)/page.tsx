@@ -1,4 +1,5 @@
-import { DonutChart } from "@/components/charts/Donut";
+import { DonutUserChart } from "@/components/charts/DonutUserChart";
+import { DonutPostChart } from "@/components/charts/DonutPostChart";
 import { Link } from "react-router-dom";
 import { useState, useMemo } from "react";
 import { Modal } from "@/components/ui/components/Modal";
@@ -12,16 +13,6 @@ import CustomButton from "@/components/reuseables/CustomButton";
 import PostForm from "@/components/forms/contents/PostForm";
 
 const activity = [
-  {
-    label: "John @johnnyomoseni100@gmail.com",
-    icon: "",
-    desc: "just got activated by Admin Dania",
-  },
-  {
-    label: "John @johnnyomoseni100@gmail.com",
-    icon: "",
-    desc: "just got activated by Admin Dania",
-  },
   {
     label: "John @johnnyomoseni100@gmail.com",
     icon: "",
@@ -51,10 +42,6 @@ function Dashboard() {
         label: "Approved Users",
         value: overviewData?.user?.Suspended || "0",
       },
-      {
-        label: "Active Matches",
-        value: "0",
-      },
     ],
     [overviewData?.user]
   );
@@ -63,19 +50,19 @@ function Dashboard() {
     () => [
       {
         label: "Total Reactions",
-        value: overviewData?.user?.total || 0,
+        value: overviewData?.["total reactions"] || 0,
       },
       {
         label: "Total Chats",
-        value: overviewData?.user?.Active || 0,
+        value: overviewData?.["total chats"] || 0,
       },
       {
         label: "Total Posts",
-        value: overviewData?.user?.Pending || 0,
+        value: overviewData?.["total posts"] || 0,
       },
       {
         label: "Total Bookmarks",
-        value: overviewData?.user?.Suspended || 0,
+        value: overviewData?.["total bookmarks"] || 0,
       },
     ],
     [overviewData]
@@ -125,7 +112,7 @@ function Dashboard() {
               </ul>
             </div>
             <div className="flex-column gap-3 card ">
-              <DonutChart data={overviewData?.user} />
+              <DonutUserChart data={overviewData?.user} />
             </div>
           </div>
 
@@ -138,7 +125,7 @@ function Dashboard() {
 
           <div className="mt-4 flex-column sm:grid grid-cols-2 gap-6">
             <div className="flex-column gap-3 card ">
-              <DonutChart data={overviewData?.user} />
+              <DonutPostChart data={overviewData} />
             </div>
 
             <div className="flex-column gap-6 card">
@@ -153,9 +140,14 @@ function Dashboard() {
                   variant="outline"
                   onClick={() => setOpenModal("create-post")}
                 />
-                <Link className="w-full" to="/">
+                <a
+                  href="mailto:support@feelingz.com"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-full"
+                >
                   <CustomButton title="Check Inbox" variant="outline" className="w-full" />
-                </Link>
+                </a>
               </ul>
             </div>
           </div>

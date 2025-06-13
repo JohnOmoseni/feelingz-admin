@@ -10,7 +10,6 @@ import api from "@/server/axios";
 import { toast } from "sonner";
 import { routes, ssCurrentUser, ssToken } from "@/constants";
 import { authApi } from "@/server/actions/auth";
-import { APP_ROLES, User } from "@/types";
 import { NavigateFunction } from "react-router-dom";
 import { Alert } from "@/constants/icons";
 import { useCallback } from "react";
@@ -18,9 +17,8 @@ import { showToast } from "@/lib/utils";
 import { extractErrorMessage } from "@/lib/errorUtils";
 
 type AuthContextType = {
-  user?: User | null;
+  user?: UserType | null;
   token?: string | null;
-  role?: (typeof APP_ROLES)[keyof typeof APP_ROLES] | string | null;
   handleLogin: (email: string, password: string, returnTo?: string) => Promise<void>;
   handleVerifyOtp: (user_id: string, token: number) => Promise<void>;
   handleResendOtp: (
@@ -42,9 +40,8 @@ type AuthProviderType = PropsWithChildren & {
 };
 
 export default function AuthProvider({ children, navigate, ...props }: AuthProviderType) {
-  const [user, setUser] = useState<User | null>();
+  const [user, setUser] = useState<UserType | null>();
   const [token, setToken] = useState<string | null>();
-  const [role, setRole] = useState<(typeof APP_ROLES)[keyof typeof APP_ROLES] | string | null>();
   const [isLoadingAuth, setIsLoadingAuth] = useState(false);
 
   useEffect(() => {
@@ -65,7 +62,7 @@ export default function AuthProvider({ children, navigate, ...props }: AuthProvi
         }
         const currentUser = setUserSession(res.data, parsedToken);
 
-        if (!currentUser.is_email_verified) {
+        if (!currentUser.is_verified) {
           navigate("/verify-otp");
         } else {
           navigate("/");
@@ -275,7 +272,6 @@ export default function AuthProvider({ children, navigate, ...props }: AuthProvi
       await authApi.logout();
       setToken(null);
       setUser(null);
-      setRole(null);
       false;
       sessionStorage.removeItem(ssCurrentUser);
       sessionStorage.removeItem(ssToken);
@@ -295,10 +291,16 @@ export default function AuthProvider({ children, navigate, ...props }: AuthProvi
   };
 
   useLayoutEffect(() => {
+    const userToken = sessionStorage.getItem(ssToken);
+    let parsedToken = "";
+    try {
+      parsedToken = userToken ? JSON.parse(userToken) : "";
+    } catch (parseError) {}
+
     const requestInterceptor = api.interceptors.request.use((config: any) => {
       // if there is a token, add it to the headers of the request, otherwise passs the authorization header that was there before
       config.headers.Authorization =
-        !config?._retry && token ? `Bearer ${token}` : config.headers.Authorization;
+        !config?._retry && token ? `Bearer ${token || parsedToken}` : config.headers.Authorization;
 
       return config;
     });
@@ -340,7 +342,6 @@ export default function AuthProvider({ children, navigate, ...props }: AuthProvi
       value={{
         user,
         token,
-        role,
         isLoadingAuth,
         handleLogin,
         handleLogout,

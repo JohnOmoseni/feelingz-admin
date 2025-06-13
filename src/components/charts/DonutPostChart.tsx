@@ -12,25 +12,16 @@ import {
 } from "@/components/ui/chart";
 import Ticker from "./Ticker";
 
-// @ts-ignore
-const desktopData = [
-  { month: "january", desktop: 186, fill: "var(--color-january)" },
-  { month: "february", desktop: 305, fill: "var(--color-february)" },
-  { month: "march", desktop: 237, fill: "var(--color-march)" },
-  { month: "april", desktop: 173, fill: "var(--color-april)" },
-  { month: "may", desktop: 209, fill: "var(--color-may)" },
-];
-
 const chartConfig = {
-  active: {
+  reactions: {
     label: "Active",
     color: "hsl(var(--chart-1))",
   },
-  suspended: {
+  chats: {
     label: "Suspended",
     color: "hsl(var(--chart-2))",
   },
-  pending: {
+  bookmarks: {
     label: "Pending",
     color: "hsl(var(--chart-3))",
   },
@@ -39,11 +30,11 @@ const chartConfig = {
 const tickerObj = [
   {
     tickerStyles: "--chart-1",
-    label: "Active",
+    label: "Reactions",
   },
   {
     tickerStyles: "--chart-2",
-    label: "Suspended",
+    label: "Chats",
   },
   {
     tickerStyles: "--chart-3",
@@ -51,15 +42,15 @@ const tickerObj = [
   },
 ];
 
-export function DonutChart({ data }: { data?: DasboardUserCountType }) {
+export function DonutPostChart({ data }: { data?: DashboardOverviewResponse }) {
   const id = "pie-interactive";
 
   const backendData = React.useMemo(
     () => ({
-      totalUsers: data?.total || 0,
-      activeUsers: data?.Active || 0,
-      suspendedUsers: data?.Suspended || 0,
-      pendingUsers: data?.Pending || 0,
+      totalReactions: data?.["total reactions"] || 0,
+      totalChats: data?.["total chats"] || 0,
+      totalPosts: data?.["total posts"] || 0,
+      totalBookmarks: data?.["total bookmarks"] || 0,
     }),
     [data]
   );
@@ -67,19 +58,19 @@ export function DonutChart({ data }: { data?: DasboardUserCountType }) {
   const chartData = React.useMemo(
     () => [
       {
-        label: chartConfig.active.label,
-        value: backendData.activeUsers,
-        fill: chartConfig.active.color,
+        label: chartConfig.reactions.label,
+        value: backendData.totalReactions,
+        fill: chartConfig.reactions.color,
       },
       {
-        label: chartConfig.suspended.label,
-        value: backendData.suspendedUsers,
-        fill: chartConfig.suspended.color,
+        label: chartConfig.chats.label,
+        value: backendData.totalChats,
+        fill: chartConfig.chats.color,
       },
       {
-        label: chartConfig.pending.label,
-        value: backendData.pendingUsers,
-        fill: chartConfig.pending.color,
+        label: chartConfig.bookmarks.label,
+        value: backendData.totalPosts,
+        fill: chartConfig.bookmarks.color,
       },
     ],
     [chartConfig, backendData]
@@ -97,8 +88,7 @@ export function DonutChart({ data }: { data?: DasboardUserCountType }) {
   return (
     <Card data-chart={id} className="flex flex-col border-none">
       <ChartStyle id={id} config={chartConfig} />
-      <p className="text-sm text-grey">Total Overview</p>
-      <div className="flex flex-1 justify-center p-6 pb-4">
+      <div className="flex flex-1 justify-center  pb-4">
         <ChartContainer
           id={id}
           config={chartConfig}

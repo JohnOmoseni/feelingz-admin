@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 import { Link, useLocation } from "react-router-dom";
 
 function Menu() {
-  const { role } = useAuth();
+  const { user } = useAuth();
 
   const dispatch = useAppDispatch();
   const { openMenu } = useAppSelector((state) => state.appState);
@@ -51,7 +51,9 @@ function Menu() {
         <nav className="flex-1 pl-[4%] pt-[max(5rem,_22%)]">
           <ul className="flex-column gap-8 overflow-y-auto text-lg">
             {sidebarLinks.map((link, idx) =>
-              link.allowedRoles.includes(role!) ? <NavLinks key={idx} {...link} idx={idx} /> : null
+              link?.showAlways || (user?.role && link.allowedRoles.includes(user.role)) ? (
+                <NavLinks key={idx} {...link} idx={idx} />
+              ) : null
             )}
           </ul>
         </nav>
@@ -83,15 +85,12 @@ function NavLinks({ label, href, icon: Icon, idx }: NavLinkProps) {
         to={href}
         {...animateFn(linksAni, idx)}
         onClick={() => handleClick()}
-        className="row-flex-start gap-3 p-1 transition-all"
+        className="row-flex-start gap-3 p-1 transition-all text-secondary-foreground"
       >
-        {Icon && <Icon className={cn("size-5", isActive && "size-5")} />}
+        {Icon && <Icon className={cn("size-5", isActive && "fill-variant")} />}
 
         <motion.span
-          className={cn(
-            "tracking-snug text-secondary-foreground mt-0.5 text-base font-semibold capitalize",
-            isActive && "text-foreground-variant"
-          )}
+          className={cn("mt-0.5 text-base font-semibold capitalize", isActive && "text-accent")}
         >
           {label}
         </motion.span>

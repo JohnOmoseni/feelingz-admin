@@ -1,4 +1,4 @@
-import { Input } from "../ui/input";
+import { Input, InputProps } from "../ui/input";
 import { cn } from "@/lib/utils";
 import { FormikErrors, FormikTouched } from "formik";
 import { FocusEventHandler, KeyboardEventHandler, ReactNode, useState } from "react";
@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Label } from "../ui/label";
 import { Eye, EyeOff } from "@/constants/icons";
 import { Checkbox } from "../ui/checkbox";
-import { Textarea } from "../ui/textarea";
+import { Textarea, TextareaProps } from "../ui/textarea";
 
 import PhoneInput from "react-phone-number-input";
 
@@ -22,11 +22,12 @@ export enum FormFieldType {
 
 interface CustomProps {
   name: string;
-  field?: {
-    value: any;
-    type?: string;
-    placeholder?: string;
-  };
+  field?: InputProps &
+    TextareaProps & {
+      value: any;
+      type?: string;
+      placeholder?: string;
+    };
   isShowPasswordError?: boolean;
   containerStyles?: string;
   fieldType: FormFieldType;
@@ -97,7 +98,10 @@ const RenderInput = ({ props }: { props: CustomProps }) => {
           />
 
           {field?.type === "password" && (
-            <span className="icon absolute right-3 z-10" onClick={changePasswordVisibility}>
+            <span
+              className="icon absolute right-3 z-10 cursor-pointer"
+              onClick={changePasswordVisibility}
+            >
               {showPassword ? (
                 <Eye size={20} className="text-secondary" />
               ) : (

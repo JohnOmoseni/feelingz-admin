@@ -1,20 +1,32 @@
 import { APP_ROLES } from "@/types";
-import { Dashboard, Settings, User } from "./icons";
+import { ContentIcon, Dashboard, Settings, User, UsersIcon } from "./icons";
 
 export const routes = {
   LOGIN: "/signin",
   VERIFY_OTP: "/verify-otp",
   DASHBOARD: "/",
-  ADMIN_ROUTES: ["/contents", "/users"],
+  ADMIN_ROUTES: ["/contents", "/users", "/staffs"],
 };
 
-export const selectOptions = [
-  { label: "Today", value: "today" },
-  { label: "Yesterday", value: "yesterday" },
-  { label: "Last 7 days", value: "week" },
-  { label: "Last 30 days", value: "month" },
-  { label: "This Year", value: "year" },
-  { label: "Custom", value: "custom" },
+export const STATUSES = {
+  green: ["active", "approved"],
+  error: ["banned", "suspended"],
+  yellow: ["pending", "inactive"],
+};
+
+export const accessLevels = [
+  {
+    value: "All Access",
+    label: "All Access",
+  },
+  {
+    value: "Read and Review",
+    label: "Read and Review",
+  },
+  {
+    value: "Read Only",
+    label: "Read Only",
+  },
 ];
 
 export const sidebarLinks = [
@@ -30,7 +42,7 @@ export const sidebarLinks = [
     label: "Content Management",
     href: "/contents",
     tag: "contents",
-    icon: User,
+    icon: ContentIcon,
     allowedRoles: [APP_ROLES.Admin, APP_ROLES.User, APP_ROLES.Staff],
     showAlways: true,
   },
@@ -40,15 +52,13 @@ export const sidebarLinks = [
     tag: "users",
     icon: User,
     allowedRoles: [APP_ROLES.Admin, APP_ROLES.User, APP_ROLES.Staff],
-    showAlways: true,
   },
   {
     label: "Staff Management",
     href: "/staffs",
     tag: "staffs",
-    icon: User,
+    icon: UsersIcon,
     allowedRoles: [APP_ROLES.Admin],
-    showAlways: true,
   },
   {
     label: "Settings",

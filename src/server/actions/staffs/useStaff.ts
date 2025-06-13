@@ -1,12 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { staffApi } from "@/server/actions/staffs";
 import { useMutation, UseMutationResult, useQueryClient } from "@tanstack/react-query";
+import { showToast } from "@/lib/utils";
 
 // STAFFS ----------------------------------------------------------------
 export const useGetAllStaff = () => {
   return useQuery({
     queryKey: ["staffs"],
     queryFn: () => staffApi.getAllStaff(),
+    retry: false,
   });
 };
 
@@ -56,21 +58,33 @@ export const useCreateAdmin = () => {
 
   return useMutation({
     mutationFn: (data: CreateAdminParams) => staffApi.createAdmin(data),
-    onError: (error) => console.error("[Adding Staff Error]", error),
-    onSuccess: (_values) => {
+    onError: (error) => {
+      const message = error?.message || `Error creating admin`;
+      console.error("[Create Admin error]", error, message);
+      showToast("error", message);
+      throw error;
+    },
+    onSuccess: (data) => {
+      const message = data?.message || "";
+      showToast("success", message);
       queryClient.invalidateQueries({ queryKey: ["staffs"] });
     },
   });
 };
 
 // UPDATE ROLE
-export const useUpdateRole = () => {
+export const useUpdateAccess = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: UpdateRoleParams) => staffApi.updateRole(data),
-    onError: (error) => console.error("[Updating User Role Error]", error),
-    onSuccess: (_values) => {
+    mutationFn: (data: UpdateAccessParams) => staffApi.updateAccessLevel(data),
+    onError: (error) => {
+      const message = error?.message || `Error updating access level`;
+      showToast("error", message);
+    },
+    onSuccess: (data) => {
+      const message = data?.message || "";
+      showToast("success", message);
       queryClient.invalidateQueries({ queryKey: ["staffs"] });
     },
   });

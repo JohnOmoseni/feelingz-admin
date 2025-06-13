@@ -1,29 +1,51 @@
-import { PropsWithChildren, useLayoutEffect } from "react";
-import { useAuth } from "./context/AuthContext";
-import { routes } from "./constants";
-import { useNavigate } from "react-router-dom";
-import FallbackLoader from "./components/fallback/FallbackLoader";
+import FallbackLoader from "@/components/fallback/FallbackLoader";
+import { routes } from "@/constants";
+import { useAuth } from "@/context/AuthContext";
+import { PropsWithChildren, useEffect, useRef, useState } from "react";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 
 function ProtectedRoute({ children }: PropsWithChildren) {
-  const { user, token } = useAuth();
+  const { user } = useAuth();
+  const { pathname } = useLocation();
   const navigate = useNavigate();
+  const hasRedirected = useRef(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const prevUserVerified = useRef<boolean | null>(null);
 
-  useLayoutEffect(() => {
-    if (user === null || token === null) {
-      // Redirect to login page
-      navigate(routes.LOGIN, { replace: true });
+  useEffect(() => {
+    // Reset hasRedirected if user or verification state changes
+    if (user === null || (user && prevUserVerified.current !== !!user.is_verified)) {
+      hasRedirected.current = false;
+    }
+
+    // Update previous verification state
+    prevUserVerified.current = user ? !!user.is_verified : null;
+
+    // Skip if already redirected in this cycle
+    if (hasRedirected.current) return;
+
+    if (user && !user.is_verified) {
+      hasRedirected.current = true;
+      navigate(routes.VERIFY_OTP, { replace: true });
       return;
     }
 
-    if (user?.otpVerified === false) {
-      // navigate(routes.VERIFY_OTP, { replace: true });
-      return;
-    }
-  }, [navigate, user]);
+    setIsLoading(false);
 
-  if (user === undefined) return <FallbackLoader label="Loading" />;
+    return () => {
+      hasRedirected.current = false;
+    };
+  }, [user, pathname, routes]);
 
-  return children;
+  if (user === undefined || isLoading) {
+    return <FallbackLoader />;
+  }
+
+  if (user === null) {
+    return <Navigate to={routes.LOGIN} replace state={{ returnTo: pathname }} />;
+  }
+
+  return <>{children}</>;
 }
 
 export default ProtectedRoute;

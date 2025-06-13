@@ -1,14 +1,16 @@
+type AccessLevelsType = "Read Only" | "All Access" | "Read and Review";
+
 interface CreateAdminParams {
   email: string;
   password: string;
   password_confirmation: string;
   full_name: string;
-  access_level: "Read Only" | "All Access" | "Read and Review"; //All Access, Read and Review
+  access_level: AccessLevelsType; //All Access, Read and Review
 }
 
-interface UpdateRoleParams {
+interface UpdateAccessParams {
   email: string;
-  newRoleName: "staff-user" | "admin-user";
+  access_level: AccessLevelsType;
 }
 
 type SELECTEDTYPE = string[];

@@ -7,37 +7,47 @@ import {
   getSortedRowModel,
   ColumnSort,
   ColumnFiltersState,
-  getPaginationRowModel,
 } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { ReactNode, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-import { TablePaginate } from "./TablePaginate";
+import { ServerSideTablePagination } from "./TablePaginate";
 import FallbackLoader from "../fallback/FallbackLoader";
 
-interface DataTableProps<TData, TValue> {
+interface ServerSideTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   tableData: TData[];
   columnFilters?: ColumnFiltersState;
   globalFilter?: any;
-  setSelectedRows?: (rows: TData[]) => void;
-  hidePageCountDropdown?: boolean;
   emptyState?: ReactNode;
   isLoading?: boolean;
+  containerStyles?: string;
+  paginationMeta: {
+    last_page: number;
+    current_page: number;
+    pageSize: number;
+    total: number;
+    onPageChange: (value: number) => void;
+    onPageSizeChange?: (value: number) => void;
+  };
 }
 
-export function DataTable<TData, TValue>({
+export default function ServerSideTable<TData, TValue>({
   columns,
   tableData,
   columnFilters,
   globalFilter,
-  setSelectedRows,
   emptyState,
   isLoading,
-}: DataTableProps<TData, TValue>) {
+  paginationMeta,
+}: ServerSideTableProps<TData, TValue>) {
   const [data, setData] = useState(tableData);
   const [sorting, setSorting] = useState<ColumnSort[]>([]);
-  const [rowSelection, setRowSelection] = useState({});
+
+  const [_pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 15,
+  });
 
   useEffect(() => {
     setData(tableData);
@@ -49,24 +59,23 @@ export function DataTable<TData, TValue>({
     state: {
       sorting,
       columnFilters,
-      rowSelection,
       globalFilter,
+      pagination: {
+        pageIndex: paginationMeta.current_page - 1, // Convert to 0-based
+        pageSize: paginationMeta.pageSize,
+      },
     },
+    pageCount: paginationMeta?.last_page, //Total pages from server
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
-    onRowSelectionChange: setRowSelection,
+    manualPagination: true,
+    onPaginationChange: setPagination,
   });
 
-  useEffect(() => {
-    const selectedRows = table.getSelectedRowModel().rows.map((row) => row.original);
-    setSelectedRows && setSelectedRows(selectedRows);
-  }, [table.getSelectedRowModel().rows, setSelectedRows]);
-
   return (
-    <div className="flex-column gap-4">
+    <div className="flex-column gap-4 pb-6">
       <div className="data-table">
         <Table className="remove-scrollbar min-h-[100px] overflow-x-auto rounded-sm">
           <TableBody>
@@ -101,7 +110,16 @@ export function DataTable<TData, TValue>({
         </Table>
       </div>
 
-      <TablePaginate table={table} />
+      <ServerSideTablePagination
+        {...{
+          onPageChange: paginationMeta.onPageChange,
+          onPageSizeChange: paginationMeta.onPageSizeChange,
+          last_page: paginationMeta.last_page,
+          current_page: paginationMeta.current_page,
+          total: paginationMeta.total,
+        }}
+        table={table}
+      />
     </div>
   );
 }

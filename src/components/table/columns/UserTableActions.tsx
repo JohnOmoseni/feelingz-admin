@@ -54,13 +54,13 @@ export const UserTableAction = ({ userInfo }: { userInfo: UserResponse }) => {
   return (
     <div className="flex-column gap-2">
       <h3 className="">{fullName}</h3>
-      <p className="truncate">{userInfo.email ? truncateString(userInfo.email, 20) : "N/A"}</p>
+      <p className="truncate">{userInfo.email ? truncateString(userInfo.email, 40) : "N/A"}</p>
 
       <div className="flex-column gap-1 my-3">
         {info.map((item, idx) => (
-          <div key={idx} className="row-flex-start gap-2">
-            <span className="">{item.label}:</span>
-            <span>{item.value}</span>
+          <div key={idx} className="row-flex-start gap-3 text-sm">
+            <span className="min-w-[8ch]">{item.label}:</span>
+            <span className="">{item.value}</span>
           </div>
         ))}
       </div>

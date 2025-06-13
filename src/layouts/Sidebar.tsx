@@ -30,7 +30,7 @@ const LinkRow = ({ href, icon: Icon, label, tag }: SidebarProps) => {
   return (
     <li title={tag} className={cn(link, isActive && "border-l-2 border-accent bg-[#222]")}>
       <div className={cn(linkInner)} onClick={() => handleNavigate()}>
-        {Icon && <Icon className={cn("size-5", isActive && "stroke-variant")} />}
+        {Icon && <Icon className={cn("size-5", isActive && "fill-variant")} />}
         <span
           className={cn(
             "leading-6 font-normal tracking-wide ",
@@ -45,7 +45,7 @@ const LinkRow = ({ href, icon: Icon, label, tag }: SidebarProps) => {
 };
 
 function Sidebar() {
-  const { role } = useAuth();
+  const { user } = useAuth();
 
   return (
     <>
@@ -55,7 +55,8 @@ function Sidebar() {
       <motion.div className="flex size-full pt-7 md:pt-12">
         <ul className="flex-column w-full gap-3">
           {sidebarLinks.map((link, idx) => {
-            const isLinkAllowed = link?.showAlways || (role && link.allowedRoles.includes(role));
+            const isLinkAllowed =
+              link?.showAlways || (user?.role && link.allowedRoles.includes(user.role));
 
             return (
               <React.Fragment key={idx}>

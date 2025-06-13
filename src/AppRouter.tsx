@@ -1,7 +1,8 @@
 import { Route, Routes, Navigate } from "react-router-dom";
 import SignIn from "./app/(auth)/signin/page";
-import VerifyOTP from "./app/(auth)/verify/page";
+import VerifyOTP from "./app/(auth)/verify-otp/page";
 import ForgotPassword from "./app/(auth)/forgot-password/page";
+import UpdatePassword from "./app/(auth)/forgot-password/update-password";
 
 import LayoutProvider from "./providers/LayoutProvider";
 
@@ -41,6 +42,7 @@ const AppRouter = () => {
               <Route path="/signin" element={<SignIn />} />
               <Route path="/verify-otp" element={<VerifyOTP />} />
               <Route path="/recover-password" element={<ForgotPassword />} />
+              <Route path="/update-password" element={<UpdatePassword />} />
             </Route>
 
             <Route

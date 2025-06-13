@@ -1,16 +1,10 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { contentApi } from ".";
 import { showToast } from "@/lib/utils";
-
-export const useGetFileManagerReport = () => {
-  return useQuery({
-    queryKey: ["getFileManagerReport"],
-    queryFn: () => null,
-  });
-};
+import { extractErrorMessage } from "@/lib/errorUtils";
 
 // QUERIES ----------------------------------------------------------------
-export const useGetAllChannels = ({ searchValue }: { searchValue: string }) => {
+export const useGetChannels = ({ searchValue }: { searchValue: string }) => {
   return useInfiniteQuery<any, Error, any>({
     queryKey: ["channels", "infinite", searchValue],
     queryFn: ({ pageParam = 1 }) =>
@@ -36,7 +30,16 @@ export const useGetAllChannels = ({ searchValue }: { searchValue: string }) => {
     },
     initialPageParam: 1,
     refetchOnWindowFocus: false,
+    retry: 1,
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+  });
+};
+
+export const useGetAllChannels = () => {
+  return useQuery({
+    queryKey: ["channels"],
+    queryFn: () => contentApi.getAllChannels({}),
+    select: (data) => data.data as ChannelResponse[],
   });
 };
 
@@ -53,10 +56,11 @@ export const useCreateChannel = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: any) => contentApi.createChannel(data),
+    mutationFn: (data: MutateChannelParams) => contentApi.createChannel(data),
     onError: (error) => {
       const message = error?.message || `Error creating channel`;
       console.error("[Create Channel error]", error, message);
+      showToast("error", message);
     },
     onSuccess: (data) => {
       const message = data?.message || "";
@@ -72,33 +76,36 @@ export const useEditChannel = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: any) => contentApi.updateChannel(data),
+    mutationFn: (data: UpdateChannelParams) => contentApi.updateChannel(data),
+
     onError: (error) => {
-      const message = error?.message || `Error updating channel`;
-      console.error("[Update Channel error]", error, message);
+      const message = extractErrorMessage(error, "Failed to update channel");
+      showToast("error", message);
+      throw error;
     },
-    onSuccess: (data, variables) => {
+    onSuccess: (data) => {
       const message = data?.message || "";
       queryClient.invalidateQueries({
-        queryKey: ["channels", variables.channel_id],
+        queryKey: ["channels", "infinite"],
       });
       showToast("success", message);
     },
   });
 };
 
-export const useDeleteArticle = () => {
+export const useDeleteChannel = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: ({ channel_id }: { channel_id: string }) =>
       contentApi.deleteChannel({ channel_id }),
     onError: (error) => {
-      console.error("[Delete channel error]", error);
       const message = error?.message || "Something went wrong";
       showToast("error", message);
     },
     onSuccess: (data) => {
-      const queryClient = useQueryClient();
-      console.log("[Delete channel data]", data);
+      const message = data?.message || "Deleted successfully";
+      showToast("success", message);
       queryClient.invalidateQueries({ queryKey: ["channels"] });
     },
   });

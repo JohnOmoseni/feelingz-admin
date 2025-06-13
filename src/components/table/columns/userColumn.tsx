@@ -1,7 +1,8 @@
 import { fallback_profile } from "@/constants/icons";
 import { UserTableAction } from "./UserTableActions";
 import { ColumnDef } from "@tanstack/react-table";
-import clsx from "clsx";
+import { StatusBadge } from "@/components/reuseables/StatusBadge";
+import { StatusType } from "@/types";
 
 export const usersColumn: ColumnDef<UserResponse>[] = [
   {
@@ -43,31 +44,9 @@ export const usersColumn: ColumnDef<UserResponse>[] = [
   {
     accessorKey: "status",
     cell: ({ row }) => {
-      const status = row.original.status;
-      const green = ["active", "approved"];
-      const error = ["banned", "suspended"];
-      const yellow = ["pending", "inactive"];
+      const status = row.original.status as StatusType;
 
-      return (
-        <div className="row-flex-start gap-2">
-          <span
-            className={clsx("size-2.5 rounded-full", {
-              "bg-green-300": green.includes(status),
-              "bg-red-200": error.includes(status),
-              "bg-yellow-200": yellow.includes(status),
-            })}
-          />
-          <p
-            className={clsx("capitalize leading-3 mt-px", {
-              "text-green-700": green.includes(status),
-              "text-red-600": error.includes(status),
-              "text-yellow-600": yellow.includes(status),
-            })}
-          >
-            {status}
-          </p>
-        </div>
-      );
+      return <StatusBadge status={status} />;
     },
     enableColumnFilter: true,
     filterFn: (row, columnId, filterValue) => {

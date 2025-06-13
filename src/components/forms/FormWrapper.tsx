@@ -24,7 +24,7 @@ function FormWrapper({
   return (
     <div className={cn("mt-6 size-full max-w-lg", containerStyles)}>
       <form onSubmit={onSubmit} className="flex-column flex-1 gap-10">
-        <div className="flex-column gap-2">{children}</div>
+        <div className="flex-column gap-4">{children}</div>
 
         {footerSection ? (
           footerSection

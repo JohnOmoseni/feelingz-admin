@@ -10,26 +10,25 @@ import * as yup from "yup";
 
 type ChannelFormProps = {
   type?: "create" | "edit";
-  data?: any;
+  channel?: ChannelResponse;
   closeModal: () => void;
 };
 
-const ChannelForm = ({ type = "create", data, closeModal }: ChannelFormProps) => {
+const ChannelForm = ({ type = "create", channel, closeModal }: ChannelFormProps) => {
   const { mutateAsync: createChannel, isPending: isCreating } = useCreateChannel();
   const { mutateAsync: editChannel, isPending: isEditing } = useEditChannel();
   const [_selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
 
   const onSubmit = async (values: any) => {
-    const payload = {
-      channelName: values.channel_name,
-      profilePic: values.profile_pic,
-    };
+    const formData = new FormData();
+    formData.append("name", values.channel_name);
+    formData.append("image", values.profile_pic);
 
     try {
-      if (type === "edit") {
-        await editChannel({ channel_id: data.channel_id, ...payload });
+      if (type === "edit" && channel) {
+        await editChannel({ channel_id: String(channel.id), name: values.channel_name });
       } else {
-        await createChannel(payload);
+        await createChannel(formData);
       }
 
       closeModal();
@@ -39,8 +38,8 @@ const ChannelForm = ({ type = "create", data, closeModal }: ChannelFormProps) =>
   const { values, errors, touched, handleBlur, handleChange, handleSubmit, setFieldValue } =
     useFormik({
       initialValues: {
-        channel_name: data?.channel_name || "",
-        profile_pic: data?.profile_pic || "",
+        channel_name: channel?.name || "",
+        profile_pic: channel?.image || "",
       },
       validationSchema: yup.object().shape({
         channel_name: yup

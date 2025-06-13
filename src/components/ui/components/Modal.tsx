@@ -53,7 +53,7 @@ export function Modal({
         </div>
 
         <AlertDialogHeader>
-          <AlertDialogTitle className="max-sm:pr-4 sm:text-xl">{title}</AlertDialogTitle>
+          <AlertDialogTitle className="max-sm:pr-4 sm:text-xl truncate">{title}</AlertDialogTitle>
 
           <AlertDialogDescription
             className={cn(

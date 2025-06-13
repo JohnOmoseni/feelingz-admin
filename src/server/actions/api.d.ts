@@ -31,5 +31,5 @@ interface UserType {
 
   userId: string | null;
   full_name: string | null;
-  is_email_verified: boolean;
+  role: (typeof APP_ROLES)[keyof typeof APP_ROLES];
 }

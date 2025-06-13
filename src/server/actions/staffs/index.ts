@@ -3,15 +3,6 @@ import { handleApiError } from "@/lib";
 import api from "@/server/axios";
 
 // STAFF ENDPOINT
-const getAllRoles = async (): Promise<AxiosResponse["data"]> => {
-  try {
-    const response = await api.get(`/admin/all-roles`);
-
-    return response.data;
-  } catch (error) {
-    handleApiError(error);
-  }
-};
 
 const getAllStaff = async (): Promise<AxiosResponse["data"]> => {
   try {
@@ -35,15 +26,8 @@ const getStaffById = async ({ staff_id }: { staff_id: string }): Promise<AxiosRe
 
 // POSTS REQUESTS
 const createAdmin = async (data: CreateAdminParams): Promise<AxiosResponse["data"]> => {
-  const payload = {
-    email: data.email,
-    password: data.password,
-    password_confirmation: data.password_confirmation,
-    full_name: data.full_name,
-    access_level: data.access_level,
-  };
   try {
-    const response = await api.post(`/admin/create`, payload);
+    const response = await api.post(`/admin/create`, data);
 
     return response.data;
   } catch (error) {
@@ -93,8 +77,7 @@ const deleteStaff = async (selectedIds: string[]): Promise<AxiosResponse["data"]
   }
 };
 
-// UPDATE ROLE
-const updateRole = async (data: UpdateRoleParams): Promise<AxiosResponse["data"]> => {
+const updateAccessLevel = async (data: UpdateAccessParams): Promise<AxiosResponse["data"]> => {
   try {
     const response = await api.put(`/admin/update-role`, data);
 
@@ -105,7 +88,6 @@ const updateRole = async (data: UpdateRoleParams): Promise<AxiosResponse["data"]
 };
 
 export const staffApi = {
-  getAllRoles,
   getAllStaff,
   getStaffById,
 
@@ -113,6 +95,6 @@ export const staffApi = {
   activateStaff,
   deactivateStaff,
 
-  updateRole,
+  updateAccessLevel,
   deleteStaff,
 };

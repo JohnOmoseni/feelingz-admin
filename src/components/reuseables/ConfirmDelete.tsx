@@ -9,54 +9,53 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { ThreeDots } from "@/constants/icons";
-import { cn } from "@/lib/utils";
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 
 type Props = {
   isPending?: boolean;
-  isPendingLabel?: string;
-  trigger: ReactNode;
   title?: string;
-  actionTitle?: string;
-  actionStyles?: string;
+  trigger: ReactNode;
   onDeleteClick: () => void;
 };
 
-const ConfirmDelete = ({
-  onDeleteClick,
-  isPending,
-  isPendingLabel,
-  trigger,
-  title,
-  actionTitle,
-  actionStyles,
-}: Props) => {
+const ConfirmDelete = ({ onDeleteClick, isPending, title = "", trigger }: Props) => {
+  const [open, setOpen] = useState(false);
+  const isActive = useRef(false);
+
+  useEffect(() => {
+    if (isActive.current) {
+      isPending ? null : setOpen(false);
+    }
+  }, [isPending]);
+
+  const handleDeleteClick = () => {
+    isActive.current = true;
+    onDeleteClick();
+  };
   return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
-        {trigger ? (
-          trigger
-        ) : (
-          <span className="icon">
-            <ThreeDots size={20} />
-          </span>
-        )}
+    <AlertDialog open={open}>
+      <AlertDialogTrigger onClick={() => setOpen(true)} className="w-full">
+        {trigger}
       </AlertDialogTrigger>
 
-      <AlertDialogContent className="bg-background">
+      <AlertDialogContent className="bg-background z-[999] max-sm:w-[85%] max-w-md rounded-2xl">
         <AlertDialogHeader>
-          <AlertDialogTitle>Are you sure you want to {title || "delete"}?</AlertDialogTitle>
+          <AlertDialogTitle>Are you sure you want to delete {title}</AlertDialogTitle>
           <AlertDialogDescription className="">This action is irreversible</AlertDialogDescription>
         </AlertDialogHeader>
 
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={() => null}>Cancel</AlertDialogCancel>
-          <AlertDialogAction
-            className={cn("bg-red-500 text-white leading-4", actionStyles)}
-            onClick={onDeleteClick}
+          <AlertDialogCancel
+            className="cursor-pointer min-w-[90px] hover:bg-accent hover:border-none hover:text-secondary-foreground"
+            onClick={() => setOpen(false)}
           >
-            {isPending ? isPendingLabel || "Deleting..." : actionTitle || "Delete"}
+            Cancel
+          </AlertDialogCancel>
+          <AlertDialogAction
+            className="bg-red-500 text-white cursor-pointer min-w-[90px]"
+            onClick={handleDeleteClick}
+          >
+            {isPending ? "Deleting..." : "Delete"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

@@ -1,28 +1,29 @@
 import { AxiosResponse } from "axios";
 import { handleApiError } from "@/lib";
 import api from "@/server/axios";
+import dayjs from "dayjs";
 
 //QUERIES
-const getAllChannels = async ({ page, query }: { page: number; query: string }): Promise<any> => {
+const getAllChannels = async ({
+  page = 1,
+  query,
+}: {
+  page?: number;
+  query?: string;
+}): Promise<AxiosResponse["data"]> => {
   try {
-    const endpoint = query ? "/channel/search" : "/channel";
+    const endpoint = query ? "/channel/channels/search" : "/channel/channels";
     const params = query ? { page, query } : { page, pageSize: 15 };
 
     const response: AxiosResponse<any> = await api.get(endpoint, {
       params,
     });
 
-    return response.data;
-  } catch (error) {
-    handleApiError(error);
-  }
-};
+    const sortedData = [...response.data?.data].sort((a, b) =>
+      dayjs(b.created_at).diff(dayjs(a.created_at))
+    );
 
-const getChannelsOverview = async (): Promise<any> => {
-  try {
-    const response: AxiosResponse<any> = await api.get("/channel/channels");
-
-    return response.data;
+    return { ...response.data, data: sortedData };
   } catch (error) {
     handleApiError(error);
   }
@@ -63,10 +64,8 @@ const createChannel = async (payload: MutateChannelParams): Promise<AxiosRespons
   }
 };
 
-const updateChannel = async (
-  payload: MutateChannelParams & { channel_id: string }
-): Promise<AxiosResponse["data"]> => {
-  const { channel_id } = payload;
+const updateChannel = async (params: UpdateChannelParams): Promise<AxiosResponse["data"]> => {
+  const { channel_id, ...payload } = params;
 
   try {
     const response = await api.put(`/channel/${channel_id}`, payload);
@@ -94,7 +93,6 @@ const deleteChannel = async ({
 export const contentApi = {
   getAllChannels,
   getChannelById,
-  getChannelsOverview,
   getFavoriteChannels,
 
   createChannel,

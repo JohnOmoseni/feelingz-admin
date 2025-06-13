@@ -1,28 +1,26 @@
 import clsx from "clsx";
 
-import { Status } from "@/types";
+import { StatusType } from "@/types";
+import { STATUSES } from "@/constants";
 
-export const StatusBadge = ({ status }: { status: Status }) => {
-  const green = ["Success", "Verified", "Active", "Approved", "Resolved"];
-  const error = ["Cancelled", "Failed", "Banned", "Rejected", "Escalated"];
-  const yellow = ["Suspended", "Pending", "Open"];
-
+export const StatusBadge = ({ status }: { status: StatusType }) => {
   return (
-    <div
-      className={clsx("row-flex rounded-full bg-blue-200 px-3 py-1.5", {
-        "bg-green-300": green.includes(status),
-        "bg-red-200": error.includes(status),
-        "bg-yellow-200": yellow.includes(status),
-      })}
-    >
+    <div className="row-flex-start gap-2">
+      <span
+        className={clsx("size-2.5 rounded-full", {
+          "bg-green-300": STATUSES["green"].includes(status),
+          "bg-red-200": STATUSES["error"].includes(status),
+          "bg-yellow-200": STATUSES["yellow"].includes(status),
+        })}
+      />
       <p
-        className={clsx("whitespace-nowrap text-xs text-blue-500 font-medium !capitalize", {
-          "text-green-700": green.includes(status),
-          "text-red-600": error.includes(status),
-          "text-yellow-600": yellow.includes(status),
+        className={clsx("capitalize leading-3 mt-px", {
+          "text-green-700": STATUSES["green"].includes(status),
+          "text-red-600": STATUSES["error"].includes(status),
+          "text-yellow-600": STATUSES["yellow"].includes(status),
         })}
       >
-        {status || "Unknown"}
+        {status}
       </p>
     </div>
   );

@@ -18,7 +18,6 @@ const login = async (params: {
 const getAuthUser = async (): Promise<AxiosResponse["data"]> => {
   try {
     const response = await api.get("/user");
-    console.log("AUTH USER RESPONSE", response);
 
     return response.data;
   } catch (error) {

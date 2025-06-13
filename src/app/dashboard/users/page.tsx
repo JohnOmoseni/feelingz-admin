@@ -48,7 +48,7 @@ function Users() {
         <TableGlobalSearch
           globalValue={globalFilter}
           placeholder="Search users by email address..."
-          onChange={(value: string) => setGlobalFilter(value)}
+          onInputChange={(value: string) => setGlobalFilter(value)}
         />
 
         <div className="row-flex-start mt-3 gap-4 w-fit border-b border-border-100">

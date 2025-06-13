@@ -100,9 +100,7 @@
   }
 
   /* UTILITIES STYLES */
-  .blend-image {
-    @apply relative overflow-hidden before:absolute after:absolute after:inset-0 after:rounded-lg after:bg-secondary after:mix-blend-soft-light;
-  }
+
   .badge {
     @apply row-flex leading-3 line-clamp-1 w-max cursor-pointer gap-1 rounded-lg border border-border bg-background px-3 py-2 text-sm font-semibold capitalize transition focus:outline-none focus:ring-1 focus:ring-ring focus:ring-offset-1 sm:whitespace-nowrap;
   }
@@ -114,6 +112,9 @@
   }
   .loader-container {
     @apply w-full h-[250px] grid place-items-center relative;
+  }
+  .loader-body {
+    @apply w-full h-[82vh] grid place-items-center relative;
   }
 
   /* RESETS */
@@ -130,7 +131,7 @@
   }
 
   .shad-select-trigger {
-    @apply h-auto min-w-[80px] gap-2 border border-border-100 font-semibold w-full rounded-lg py-2.5 px-3  text-sm placeholder:text-placeholder focus:ring-0 focus:ring-transparent md:whitespace-nowrap cursor-pointer leading-4 active:bg-background-100 transition;
+    @apply h-auto  gap-2 border border-border-100 font-semibold w-full rounded-lg py-2.5 px-3  text-sm placeholder:text-placeholder focus:ring-0 focus:ring-transparent md:whitespace-nowrap cursor-pointer leading-4 active:bg-background-100 transition;
   }
   .shad-select-content {
     @apply relative rounded-lg bg-background !important;
@@ -138,11 +139,11 @@
   .shad-select-item {
     @apply row-flex-start cursor-pointer py-2 text-sm px-2;
   }
+  .popover-item {
+    @apply row-flex-start gap-3 cursor-pointer;
+  }
 
   /* Data Table */
-  .shad-table-row-header {
-    @apply whitespace-nowrap bg-background py-4 font-semibold capitalize text-foreground max-sm:text-sm;
-  }
   .shad-table-row {
     @apply py-3 transition-colors bg-slate-50 data-[state=selected]:bg-muted hover:bg-background-100;
   }
@@ -154,9 +155,6 @@
   }
   .table-actions {
     @apply row-flex absolute bottom-4 right-3 gap-2 sm:gap-4 md:bottom-7 md:right-7;
-  }
-  .table-data-sm {
-    @apply mx-auto capitalize lg:whitespace-nowrap text-foreground-100 w-full max-sm:break-words max-w-[60ch];
   }
 
   /* SKELETON LOADER */

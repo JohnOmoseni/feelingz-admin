@@ -22,9 +22,6 @@ export function extractErrorMessage(error: any, fallback: string = "An error occ
     if (typeof responseData.errors === "string") {
       return responseData.errors;
     }
-    if (typeof responseData.message === "string") {
-      return responseData.message;
-    }
 
     // Handle arrays of errors
     if (Array.isArray(responseData.errors)) {

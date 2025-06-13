@@ -35,7 +35,8 @@
 }
 
 /* SVGS */
-.stroke-variant * {
+.fill-variant * {
+  fill: var(--accent) !important;
   stroke: var(--accent) !important;
 }
 

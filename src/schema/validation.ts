@@ -1,11 +1,27 @@
 import * as yup from "yup";
 import { isValidPhoneNumber } from "libphonenumber-js";
+import { accessLevels } from "@/constants";
 
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/;
 
 export const SignInSchema = yup.object().shape({
   email: yup.string().email("Invalid email address").required("Email is required"),
   password: yup.string().required("Password is required"),
+});
+
+export const ResetPasswordSchema = yup.object().shape({
+  password: yup
+    .string()
+    .required("Password is required")
+    .matches(
+      passwordRegex,
+      "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
+    )
+    .min(8, "Password must be at least 8 characters"),
+  password_confirmation: yup
+    .string()
+    .oneOf([yup.ref("password"), undefined], "Passwords must match")
+    .required("Please confirm your new password"),
 });
 
 export const AddAdminSchema = yup.object().shape({
@@ -87,15 +103,29 @@ export const PostSchema = yup
   });
 
 export const AddStaffSchema = yup.object().shape({
-  firstName: yup
+  fullName: yup
     .string()
     .min(2, "Name must be at least 2 characters")
     .max(50, "Name must be at most 50 characters")
     .required("Field is required"),
-  lastName: yup.string().min(2, "Name must be at least 2 characters").required("Field is required"),
   email: yup.string().email("Invalid email address").required("Field is required"),
-  role: yup
+  access_level: yup
     .mixed()
-    .oneOf(["ADMIN", "STAFF"], "Role must be either 'Admin' or 'Staff'")
+    .oneOf(
+      accessLevels?.map?.((level) => level.value),
+      "Access Level must be either 'All Access', 'Read Only', or 'Read and Review'"
+    )
     .required("Field is required"),
+  password: yup
+    .string()
+    .required("Password is required")
+    .matches(
+      passwordRegex,
+      "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
+    )
+    .min(8, "Password must be at least 8 characters"),
+  password_confirmation: yup
+    .string()
+    .oneOf([yup.ref("password"), undefined], "Passwords must match")
+    .required("Please confirm your new password"),
 });

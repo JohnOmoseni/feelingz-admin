@@ -64,7 +64,7 @@ const config = {
       },
       fontSize: {
         sm: "0.8rem",
-        base: ["0.86rem", { lineHeight: "1.2" }],
+        base: "0.86rem",
         subtitle: ["clamp(0.9rem, 3vw, 0.95rem)", { lineHeight: "1.2" }],
         secondaryFont: ["clamp(1.4rem, 3vw, 28px) ", { lineHeight: "1.2" }],
         primaryFont: ["clamp(2.2rem, 5vw, 36px)", { lineHeight: "1.2" }],

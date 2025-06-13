@@ -1,32 +1,47 @@
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { SearchIcon } from "@/constants/icons";
-import { useEffect, useState } from "react";
+import { InputHTMLAttributes, useEffect, useMemo, useState } from "react";
+import debounce from "lodash/debounce";
 
-type TableGlobalSearchProps = {
+type TableGlobalSearchProps = InputHTMLAttributes<HTMLInputElement> & {
   containerStyles?: string;
   placeholder?: string;
   globalValue: string;
-  onChange: (value: string) => void;
+  onInputChange: (value: string) => void;
 };
 
 function TableGlobalSearch({
-  onChange,
+  onInputChange,
   globalValue,
   containerStyles,
   placeholder,
+  ...props
 }: TableGlobalSearchProps) {
   const [value, setValue] = useState(globalValue);
+
+  const debouncedOnChange = useMemo(
+    () => debounce((val: string) => onInputChange(val), 1000),
+    [onInputChange]
+  );
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    if (!props.disabled) {
+      setValue(newValue);
+      debouncedOnChange(newValue);
+    }
+  };
 
   useEffect(() => {
     setValue(globalValue);
   }, [globalValue]);
 
   useEffect(() => {
-    const timeout = setTimeout(() => onChange(value), 100);
-
-    return () => clearTimeout(timeout);
-  }, [value]);
+    return () => {
+      debouncedOnChange.cancel();
+    };
+  }, [debouncedOnChange]);
 
   return (
     <div
@@ -40,7 +55,7 @@ function TableGlobalSearch({
         value={value}
         placeholder={placeholder ?? "Search..."}
         className="i-reset h-7 sm:h-8"
-        onChange={(e) => setValue(e.target.value)}
+        onChange={(e) => handleChange(e)}
       />
     </div>
   );

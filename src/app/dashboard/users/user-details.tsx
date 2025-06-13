@@ -4,28 +4,39 @@ import useEmptyState from "@/hooks/useEmptyState";
 import dayjs from "dayjs";
 import SectionWrapper from "@/layouts/SectionWrapper";
 
-import { useGetUserDetails, useMutateUser } from "@/server/actions/users/useUsers";
+import {
+  useDeleteUser,
+  useGetUserDetails,
+  useGetUserMedia,
+  useMutateUser,
+  useNotifyUser,
+} from "@/server/actions/users/useUsers";
 import { useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { fallback_profile } from "@/constants/icons";
+import { StatusBadge } from "@/components/reuseables/StatusBadge";
 
-function getStatusClass(label: string, value: string) {
-  if (!label || !value) return "text-foreground-100";
+const formatKey = (key: string) => {
+  const words = key.split("_");
 
-  if (label.includes("Status")) {
-    if (value.includes("Approved")) return "text-green-600 font-semibold";
-    if (value.includes("Rejected")) return "text-red-600 font-semibold";
-  }
-  return "text-foreground-100";
-}
+  words[0] = words[0].charAt(0).toUpperCase() + words[0].slice(1).toLowerCase();
+
+  return words.join(" ");
+};
 
 function UserDetails() {
   const { user_id } = useParams();
-
   const { data: user, isError, error, isLoading: isFetchingUser } = useGetUserDetails(user_id!);
+  const {
+    data: userMedia,
+    isError: isFetchingUserMediaError,
+    isLoading: isFetchingUserMedia,
+  } = useGetUserMedia(user_id!);
 
   const [activeAction, setActiveAction] = useState<MutateUserActionType | null>(null);
   const { mutateAsync: mutateUser, isPending } = useMutateUser();
+  const { mutateAsync: notifyUser, isPending: isNotifying } = useNotifyUser();
+  const { mutateAsync: deleteUser, isPending: isDeleting } = useDeleteUser();
 
   const isValidData = useMemo(() => user && Object.keys(user).length > 0, [user]);
   const {} = useEmptyState({
@@ -45,9 +56,24 @@ function UserDetails() {
 
     try {
       await mutateUser(data);
-    } catch (err: any) {
-      console.log("Error", err);
-    }
+    } catch (err: any) {}
+  };
+
+  const onNotifyUser = async () => {
+    const data = {
+      user_id: user.id,
+      email: user.email,
+    };
+
+    try {
+      await notifyUser(data);
+    } catch (err: any) {}
+  };
+
+  const onDeleteUser = async () => {
+    try {
+      await deleteUser(user.id);
+    } catch (err: any) {}
   };
 
   const userInfo = useMemo(() => {
@@ -59,7 +85,7 @@ function UserDetails() {
       fullName,
       dob,
       location,
-      first_name: user?.first_name || "Jane",
+      first_name: user?.first_name || "Unknown",
       zodiac: user?.zodiac || "",
       occupation: user?.occupation || "",
       height: user?.height || "",
@@ -79,34 +105,32 @@ function UserDetails() {
   }, [user]);
 
   const details = useMemo(() => {
-    const fullName = `${user?.first_name || "Unknown"} ${user?.last_name || ""}`.trim();
     const location = [user?.city, user?.state, user?.country].filter(Boolean).join(", ") || "N/A";
     const dob = user?.dob ? dayjs().diff(dayjs(user.dob), "year") : "N/A";
 
     return [
       {
         profile_details: {
-          fullName,
-          dob,
+          first_name: user?.first_name || "Unknown",
+          date_of_birth: dob,
           location,
-          first_name: user?.first_name || "",
-          zodiac: user?.zodiac || "",
-          occupation: user?.occupation || "",
-          height: user?.height || "",
-          size: user?.size || "",
-          education: user?.faith || "",
-          faith: user?.faith || "",
-          bio: user?.bio || "",
+          zodiac: user?.zodiac || "N/A",
+          occupation: user?.occupation || "N/A",
+          height: user?.height || "N/A",
+          size: user?.size || "N/A",
+          level_of_education: user?.education || "N/A",
+          faith: user?.faith || "N/A",
         },
       },
       {
         preferences: {
-          age_range: user?.age_range || "",
-          zodiac: user?.zodiac || "",
-          height: user?.height || "",
-          location: user?.location || "",
-          size: user?.size || "",
-          faith: user?.faith || "",
+          size: user?.size || "N/A",
+          zodiac: user?.zodiac || "N/A",
+          level_of_education: user?.education || "N/A",
+          age_range: user?.age_range || "N/A",
+          height: user?.height || "N/A",
+          location,
+          faith: user?.faith || "N/A",
         },
       },
     ];
@@ -116,18 +140,23 @@ function UserDetails() {
   const isApproved = userInfo.status === "active";
 
   return (
-    <SectionWrapper headerTitle="User Details">
-      {false ? (
-        <FallbackLoader />
+    <SectionWrapper
+      headerTitle="User Details"
+      customHeaderContent={<StatusBadge status={userInfo.status} />}
+    >
+      {isFetchingUser ? (
+        <div className="loader-body">
+          <FallbackLoader />
+        </div>
       ) : (
-        <div className="flex-column gap-8 mt-6 items-center">
-          <div className="row-flex gap-6">
+        <div className="flex-column gap-8 my-6">
+          <div className="row-flex gap-6 w-max mx-auto">
             <div className="flex-column items-center justify-between gap-3 w-full">
-              <label className="text-center">Profile Picture</label>
+              <label className="text-center whitespace-nowrap">Profile Picture</label>
               <img
                 src={userInfo.profile_pic}
                 alt=""
-                className="rounded-md min-w-[160px] size-[160px] object-cover"
+                className="size-[100px] min-[500px]:size-[160px] object-cover"
               />
             </div>
 
@@ -136,29 +165,25 @@ function UserDetails() {
               <img
                 src={userInfo.selfie}
                 alt=""
-                className="rounded-md min-w-[160px] size-[160px] object-cover"
+                className="size-[100px] min-[500px]:size-[160px]  object-cover"
               />
             </div>
           </div>
 
-          <div className="flex-column items-center gap-6">
-            <h2 className="text-center">{userInfo.first_name}</h2>
+          <div className="flex-column items-center gap-7">
+            <div>
+              <h2 className="text-center">{userInfo.first_name}</h2>
+              <p className="text-center text-xs text-grey mt-2 font-inter max-w-[60ch] mx-auto">
+                {userInfo.bio}
+              </p>
+            </div>
 
-            <div className="row-flex-start gap-3">
+            <div className="row-flex !flex-wrap gap-3">
               <CustomButton
                 title={isApproved ? "Un-Approve" : "Approve"}
                 variant="badge"
                 size="badge"
-                className="bg-secondary"
-                onClick={() => onMutateUser(user, isApproved ? "Un-Approve" : "Approve")}
-                disabled={isPending && activeAction === (isApproved ? "Un-Approve" : "Approve")}
-                isLoading={isPending && activeAction === (isApproved ? "Un-Approve" : "Approve")}
-              />
-              <CustomButton
-                title={isApproved ? "Un-Approve" : "Approve"}
-                variant="badge"
-                size="badge"
-                className="bg-green-500"
+                className="bg-green-600"
                 onClick={() => onMutateUser(user, isApproved ? "Un-Approve" : "Approve")}
                 disabled={isPending && activeAction === (isApproved ? "Un-Approve" : "Approve")}
                 isLoading={isPending && activeAction === (isApproved ? "Un-Approve" : "Approve")}
@@ -167,47 +192,101 @@ function UserDetails() {
                 title={isSuspended ? "Un-Suspend" : "Suspend"}
                 size="badge"
                 variant="badge"
-                className="bg-red-500"
+                className="bg-secondary"
                 onClick={() => onMutateUser(user, isSuspended ? "Un-Suspend" : "Suspend")}
                 disabled={isPending && activeAction === (isSuspended ? "Un-Suspend" : "Suspend")}
                 isLoading={isPending && activeAction === (isSuspended ? "Un-Suspend" : "Suspend")}
               />
+              <CustomButton
+                title={"Notify"}
+                variant="badge"
+                size="badge"
+                className="bg-accent"
+                onClick={() => onNotifyUser()}
+                disabled={isNotifying}
+                isLoading={isNotifying}
+              />
+              <CustomButton
+                title={"Delete User"}
+                variant="badge"
+                size="badge"
+                className="bg-red-600"
+                onClick={() => onDeleteUser()}
+                disabled={isDeleting}
+                isLoading={isDeleting}
+              />
             </div>
 
             <div className="row-flex-btwn gap-4">
-              <span>{userInfo.created_at}</span>
-              <span>{userInfo.last_seen}</span>
+              <span className="text-sm font-inter font-semibold">{userInfo.created_at}</span>
+              <span className="">{userInfo.last_seen}</span>
             </div>
           </div>
 
-          <div className="pt-4 border-t border-border-100 flex-column">
-            <h3>Profile Details</h3>
+          <div className="pt-4 flex-column gap-6 border-t border-border-100 flex-column">
+            <h3 className="text-lg">Profile Details</h3>
 
-            <ul className="grid grid-cols-2 gap-5 sm:gap-x-12">
-              {details?.map((item, idx) => (
-                <li key={idx} className="w-full flex-column gap-0.5">
-                  <p className="font-semibold"></p>
-                </li>
-              ))}
+            <ul className="max-[500px]:flex-column grid grid-cols-2 grid-rows-5 gap-y-4 gap-x-12">
+              {Object.entries(details[0]?.profile_details || []).map(([key, value], idx) => {
+                return (
+                  <li key={idx} className="w-full row-flex-start gap-2 text-base">
+                    <p className="font-semibold capitalize max-[500px]:min-w-[15ch] min-w-[12ch]">
+                      {formatKey(key || "")}:
+                    </p>
+                    <p className="text-grey min-w-[10ch]">{value}</p>
+                  </li>
+                );
+              })}
             </ul>
           </div>
 
-          <div className="pt-4 border-t border-border-100 flex-column">
-            <h3>Photos</h3>
+          <div className="pt-4 flex-column gap-6 border-t border-border-100 flex-column">
+            <h3 className="text-lg">Preferences</h3>
 
-            <div className="grid grid-cols-[repeat(auto-fit,_minmax(90px,_1fr))] gap-4">
-              {user?.images.length > 0 &&
-                userInfo.images.map((src: string, idx: number) => {
-                  return (
-                    <img
-                      key={idx}
-                      src={src}
-                      alt=""
-                      className="rounded-xl overflow-hidden size-[90px] object-cover w-24"
-                    />
-                  );
-                })}
-            </div>
+            <ul className="max-[500px]:flex-column grid grid-cols-2 grid-rows-4 gap-y-4 gap-x-12">
+              {Object.entries(details[1]?.preferences || []).map(([key, value], idx) => {
+                return (
+                  <li key={idx} className="w-full row-flex-start gap-2 text-base">
+                    <p className="font-semibold capitalize max-[500px]:min-w-[15ch] min-w-[12ch]">
+                      {formatKey(key || "")}:
+                    </p>
+                    <p className="text-grey min-w-[10ch]">{value}</p>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+
+          <div className="pt-4 flex-column gap-6 border-t border-border-100 flex-column">
+            <h3 className="text-lg">Photos</h3>
+
+            {isFetchingUserMedia ? (
+              <div className="loader-container">
+                <FallbackLoader />
+              </div>
+            ) : (
+              <div className="grid grid-cols-[repeat(auto-fit,_minmax(100px,1fr))] lg:grid-cols-[repeat(5,_minmax(90px,_max-content))] gap-4 pr-3">
+                {/* {Array.from({ length: 10 }).map((img: any, idx: number) => { */}
+                {Array.isArray(userMedia) && userMedia?.length > 0 ? (
+                  userInfo.images.map((img: any, idx: number) => {
+                    return (
+                      <img
+                        key={idx}
+                        src={img?.url || ""}
+                        alt=""
+                        className="overflow-hidden size-[90px] object-cover w-24"
+                      />
+                    );
+                  })
+                ) : (
+                  <div className="loader-container !h-[150px]">
+                    <p className="">
+                      {isFetchingUserMediaError ? "Error fetching User Media" : "No user media"}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}

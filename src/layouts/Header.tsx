@@ -23,7 +23,7 @@ function Header({
   };
 
   return (
-    <header className="sticky top-0 bg-background shadow-sm z-[50] min-h-[55px] w-full">
+    <header className="sticky top-0 bg-background shadow-sm z-[98] min-h-[55px] w-full">
       <div className="row-flex-btwn gap-6 border-b border-border-100 py-3 px-4 md:px-5 md:py-4">
         <h2 className="capitalize text-xl sm:text-2xl">{title}</h2>
 
@@ -31,14 +31,14 @@ function Header({
           customHeaderContent
         ) : (
           <div className="row-flex gap-3">
-            <div className="sm:row-flex gap-2 hidden">
-              <CustomAvatars seed={user?.name || "Admin"} variant="initials" className="" />
+            <div className="row-flex gap-2">
+              <CustomAvatars seed={user?.first_name || "Admin"} variant="initials" className="" />
 
               <DropdownList
                 trigger={
                   <div className="row-flex-btwn gap-1">
-                    <p className="w-full break-words text-base font-semibold leading-4">
-                      {user?.name || "Admin"}
+                    <p className="w-full break-words text-base font-semibold max-sm:max-w-[10ch] leading-4">
+                      {user?.first_name || "Admin"}
                     </p>
 
                     <KeyboardArrowDown className="size-4" />

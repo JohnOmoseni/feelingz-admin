@@ -1,34 +1,26 @@
-import { DataTable } from "@/components/table/DataTable";
-import { Dispatch, Fragment, SetStateAction, useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { Modal } from "@/components/ui/components/Modal";
-import { useGetAllChannels } from "@/server/actions/contents/useContent";
+import { useGetChannels } from "@/server/actions/contents/useContent";
 import { LoadMoreIcon } from "@/constants/icons";
 import { debounce } from "lodash";
 import { useInView } from "react-intersection-observer";
 
 import TableGlobalSearch from "@/components/table/TableGlobalSearch";
-import Filters from "@/components/table/filters";
 import SectionWrapper from "@/layouts/SectionWrapper";
-import SkeletonLoader from "@/components/fallback/SkeletonLoader";
 import CustomButton from "@/components/reuseables/CustomButton";
 import ChannelForm from "@/components/forms/contents/ChannelForm";
 import ChannelCard from "./channel-card";
 import PostForm from "@/components/forms/contents/PostForm";
 import FallbackLoader from "@/components/fallback/FallbackLoader";
 import dayjs from "dayjs";
-
-const statusOptions = [
-  { label: "All", value: "all" },
-  { label: "Approved", value: "approved" },
-  { label: "Pending Approval", value: "pending" },
-  { label: "Rejected", value: "rejected" },
-];
+import Post from "./posts";
 
 function Contents() {
-  const [globalFilter, setGlobalFilter] = useState("");
+  const [searchValue, setSearchValue] = useState("");
   const [openModal, setOpenModal] = useState<
-    false | "create-channel" | "create-post" | "edit-post"
+    false | "create-channel" | "create-post" | "edit-post" | "edit-channel"
   >(false);
+  const [activeChannel, setActiveChannel] = useState<ChannelResponse | null>(null);
 
   const { ref, inView } = useInView({
     threshold: 0.1,
@@ -42,7 +34,7 @@ function Contents() {
     isFetchingNextPage,
     isLoading: isFetchingChannels,
     isError: isFetchingChannelsError,
-  } = useGetAllChannels({ searchValue: "" });
+  } = useGetChannels({ searchValue });
 
   const flattenedChannels = data?.pages?.flatMap((page: any) => page.data) || [];
 
@@ -54,68 +46,68 @@ function Contents() {
     }
   }, [inView, hasNextPage, isFetchingNextPage, debouncedFetchNextPage]);
 
-  const isLoading = false;
-
-  console.log("DATA", data, flattenedChannels);
   return (
     <>
       <SectionWrapper headerTitle={"Contents"}>
-        {isLoading ? (
-          <SkeletonLoader />
+        <div className="flex-column gap-3">
+          <div className="row-flex-btwn gap-4">
+            <h3 className="text-lg">Channels</h3>
+
+            <CustomButton
+              title="Create New Channel"
+              onClick={() => setOpenModal("create-channel")}
+            />
+          </div>
+
+          <TableGlobalSearch
+            placeholder="Search Channels"
+            globalValue={searchValue}
+            containerStyles="md:w-[480px]"
+            onInputChange={(value: string) => setSearchValue(value)}
+          />
+        </div>
+
+        {isFetchingChannels ? (
+          <div className="loader-container !h-[120px]">
+            <FallbackLoader />
+          </div>
+        ) : isFetchingChannelsError || flattenedChannels.length === 0 ? (
+          <div className="loader-container !h-[100px]">
+            {isFetchingChannelsError ? "Error fetching channels" : "No channels found"}
+          </div>
         ) : (
-          <>
-            <div className="flex-column gap-3">
-              <div className="row-flex-btwn gap-4">
-                <h3 className="text-lg">Channels</h3>
+          <div className="grid grid-flow-col [grid-auto-columns:_minmax(250px,_1fr)] items-center overflow-x-auto remove-scrollbar gap-4 sm:gap-5 [mask-image:linear-gradient(to_right,transparent,black_5%,black_96%,transparent)] px-3 -mx-2">
+            {data?.pages?.map((page: any, pageIndex: number) => (
+              <Fragment key={pageIndex}>
+                {page?.data?.map((channel: any) => {
+                  const formattedChannel = {
+                    ...channel,
+                    created_at: channel?.created_at
+                      ? dayjs(channel.created_at).format("[Created] ddd, MMMM YYYY")
+                      : "",
+                  };
 
-                <CustomButton
-                  title="Create New Channel"
-                  onClick={() => setOpenModal("create-channel")}
-                />
-              </div>
+                  return (
+                    <ChannelCard
+                      key={channel.id}
+                      channel={formattedChannel}
+                      setActiveChannel={setActiveChannel}
+                      setOpenModal={setOpenModal}
+                    />
+                  );
+                })}
+              </Fragment>
+            ))}
 
-              <TableGlobalSearch
-                placeholder="Search Channels"
-                globalValue={globalFilter}
-                containerStyles="md:w-[480px]"
-                onChange={(value: string) => setGlobalFilter(value)}
-              />
-            </div>
-
-            {isFetchingChannels ? (
-              <div className="loader-container !h-[120px]">
-                <FallbackLoader />
-              </div>
-            ) : isFetchingChannelsError || flattenedChannels.length === 0 ? (
-              <></>
-            ) : (
-              <div className="grid grid-flow-col [grid-auto-columns:_minmax(250px,_1fr)] items-center overflow-x-auto remove-scrollbar gap-4 sm:gap-5 [mask-image:linear-gradient(to_right,transparent,black_5%,black_96%,transparent)] px-3 -mx-2">
-                {data?.pages?.map((page: any, pageIndex: number) => (
-                  <Fragment key={pageIndex}>
-                    {page?.data?.map((channel: any) => {
-                      const formattedChannel = {
-                        ...channel,
-                        created_at: channel?.created_at
-                          ? dayjs(channel.created_at).format("[Created] ddd, MMMM YYYY")
-                          : "",
-                      };
-
-                      return <ChannelCard key={channel.id} channel={formattedChannel} />;
-                    })}
-                  </Fragment>
-                ))}
-
-                {isFetchingNextPage && (
-                  <div ref={ref} className="px-3 row-flex">
-                    <LoadMoreIcon className="size-6 animate-spin" />
-                  </div>
-                )}
+            {isFetchingNextPage && (
+              <div ref={ref} className="px-3 row-flex">
+                <LoadMoreIcon className="size-6 animate-spin" />
               </div>
             )}
-
-            <Post setOpenModal={setOpenModal} />
-          </>
+          </div>
         )}
+
+        <Post setOpenModal={setOpenModal} />
       </SectionWrapper>
 
       <Modal
@@ -125,6 +117,20 @@ function Contents() {
       >
         <div className="px-0.5">
           <ChannelForm closeModal={() => setOpenModal(false)} />
+        </div>
+      </Modal>
+
+      <Modal
+        openModal={openModal === "edit-channel"}
+        setOpenModal={() => setOpenModal(false)}
+        title="Edit Channel"
+      >
+        <div className="px-0.5">
+          <ChannelForm
+            channel={activeChannel!}
+            type="edit"
+            closeModal={() => setOpenModal(false)}
+          />
         </div>
       </Modal>
 
@@ -142,66 +148,3 @@ function Contents() {
 }
 
 export default Contents;
-
-type PostProps = {
-  setOpenModal: Dispatch<SetStateAction<false | "create-channel" | "create-post" | "edit-post">>;
-};
-
-const Post = ({ setOpenModal }: PostProps) => {
-  const [selectedFilter, setSelectedFilter] = useState("");
-  const [globalFilter, setGlobalFilter] = useState("");
-  const [columnFilters, setColumnFilters] = useState([]);
-
-  const tableData: any = [];
-
-  return (
-    <div className="flex-column mt-4 gap-3">
-      <div className="row-flex-btwn gap-4">
-        <h3 className="text-lg">Posts</h3>
-
-        <CustomButton title="Post" onClick={() => setOpenModal("create-post")} />
-      </div>
-
-      <div className="row-flex-btwn gap-3">
-        <TableGlobalSearch
-          globalValue={globalFilter || ""}
-          placeholder="Search Posts"
-          onChange={(value: string) => setGlobalFilter(value)}
-        />
-
-        <div className="row-flex gap-4">
-          <Filters
-            placeholder="Filter by date"
-            columnId="status"
-            showAsDropdown={true}
-            options={statusOptions}
-            isArrowDown={true}
-            selectedFilter={selectedFilter}
-            setSelectedFilter={setSelectedFilter}
-            setColumnFilters={setColumnFilters}
-          />
-
-          <Filters
-            placeholder="Filter by channel"
-            columnId="status"
-            showAsDropdown={true}
-            options={statusOptions}
-            isArrowDown={true}
-            selectedFilter={selectedFilter}
-            setSelectedFilter={setSelectedFilter}
-            setColumnFilters={setColumnFilters}
-          />
-        </div>
-      </div>
-
-      <div className="mt-3">
-        <DataTable
-          columns={[]}
-          tableData={tableData || []}
-          globalFilter={globalFilter}
-          columnFilters={columnFilters}
-        />
-      </div>
-    </div>
-  );
-};
