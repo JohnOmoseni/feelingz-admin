@@ -1,12 +1,4 @@
-import {
-  createContext,
-  PropsWithChildren,
-  useContext,
-  useEffect,
-  useLayoutEffect,
-  useState,
-} from "react";
-import api from "@/server/axios";
+import { createContext, PropsWithChildren, useContext, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { routes, ssCurrentUser, ssToken } from "@/constants";
 import { authApi } from "@/server/actions/auth";
@@ -289,53 +281,6 @@ export default function AuthProvider({ children, navigate, ...props }: AuthProvi
       );
     }
   };
-
-  useLayoutEffect(() => {
-    const userToken = sessionStorage.getItem(ssToken);
-    let parsedToken = "";
-    try {
-      parsedToken = userToken ? JSON.parse(userToken) : "";
-    } catch (parseError) {}
-
-    const requestInterceptor = api.interceptors.request.use((config: any) => {
-      // if there is a token, add it to the headers of the request, otherwise passs the authorization header that was there before
-      config.headers.Authorization =
-        !config?._retry && token ? `Bearer ${token || parsedToken}` : config.headers.Authorization;
-
-      return config;
-    });
-
-    return () => {
-      api.interceptors.request.eject(requestInterceptor);
-    };
-  }, [token]);
-
-  useLayoutEffect(() => {
-    const refreshInterceptor = api.interceptors.response.use(
-      (response) => response,
-      async (error) => {
-        const originalRequest = error.config;
-
-        if (error?.response?.status === 403 && error?.response?.message === "Unauthorized") {
-          originalRequest._retry = true;
-          try {
-            // const response = await authApi.refreshAccessToken();
-            // setToken(response.data?.accessToken);
-            // originalRequest.headers.Authorization = `Bearer ${response.data?.accessToken}`;
-            // return api.request(originalRequest);
-          } catch (error) {
-            console.error("Failed to refresh token:", error);
-          }
-        }
-
-        return Promise.reject(error);
-      }
-    );
-
-    return () => {
-      api.interceptors.response.eject(refreshInterceptor);
-    };
-  }, [token]);
 
   return (
     <AuthContext.Provider

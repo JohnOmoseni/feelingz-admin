@@ -104,7 +104,9 @@ function Dashboard() {
                   >
                     <UserAvatar className="w-fit h-[30px]" />
                     <div className="flex-column gap-1 w-full overflow-hidden">
-                      <p className="text-sm font-semibold line-clamp-2 truncate">{item.label}</p>
+                      <p className="text-sm font-semibold line-clamp-2 w-full pr-1 truncate">
+                        {item.label}
+                      </p>
                       <p className="text-xs text-grey">{item.desc}</p>
                     </div>
                   </li>

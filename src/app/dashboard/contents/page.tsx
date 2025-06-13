@@ -76,7 +76,7 @@ function Contents() {
             {isFetchingChannelsError ? "Error fetching channels" : "No channels found"}
           </div>
         ) : (
-          <div className="grid grid-flow-col [grid-auto-columns:_minmax(250px,_1fr)] items-center overflow-x-auto remove-scrollbar gap-4 sm:gap-5 [mask-image:linear-gradient(to_right,transparent,black_5%,black_96%,transparent)] px-3 -mx-2">
+          <div className="grid grid-flow-col [grid-auto-columns:_minmax(250px,_1fr)] items-center overflow-x-auto remove-scrollbar gap-4 sm:gap-5 [mask-image:linear-gradient(to_right,transparent,black_5%,black_96%,transparent)] px-3 -mx-3">
             {data?.pages?.map((page: any, pageIndex: number) => (
               <Fragment key={pageIndex}>
                 {page?.data?.map((channel: any) => {

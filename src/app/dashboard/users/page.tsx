@@ -44,7 +44,7 @@ function Users() {
 
   return (
     <>
-      <SectionWrapper headerTitle={"User Management"}>
+      <SectionWrapper headerTitle={"Users"}>
         <TableGlobalSearch
           globalValue={globalFilter}
           placeholder="Search users by email address..."
