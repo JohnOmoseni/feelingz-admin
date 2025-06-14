@@ -44,7 +44,6 @@ export const sidebarLinks = [
     tag: "contents",
     icon: ContentIcon,
     allowedRoles: [APP_ROLES.Admin, APP_ROLES.Staff],
-    showAlways: true,
   },
   {
     label: "User Management",
@@ -52,7 +51,6 @@ export const sidebarLinks = [
     tag: "users",
     icon: User,
     allowedRoles: [APP_ROLES.Admin, APP_ROLES.Staff],
-    showAlways: true,
   },
   {
     label: "Staff Management",
@@ -60,7 +58,6 @@ export const sidebarLinks = [
     tag: "staffs",
     icon: UsersIcon,
     allowedRoles: [APP_ROLES.Admin],
-    showAlways: true,
   },
   {
     label: "Settings",
