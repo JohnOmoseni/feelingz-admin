@@ -48,7 +48,10 @@ function Header({
                 list={["Log out"]}
                 renderItem={(item) => {
                   return (
-                    <div className="row-flex-btwn w-full cursor-pointer gap-3" onClick={onLogout}>
+                    <div
+                      className="row-flex-btwn w-full cursor-pointer gap-3 transition hover:text-secondary-foreground"
+                      onClick={onLogout}
+                    >
                       <span className="text-base">{isLoadingAuth ? "Signing out" : item}</span>
 
                       {isLoadingAuth ? (
