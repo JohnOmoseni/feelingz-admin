@@ -95,6 +95,8 @@ export default function AuthProvider({ children, navigate, ...props }: AuthProvi
       setUser(currentUser);
       setToken(authToken);
 
+      console.log("RESDATA", currentUser);
+
       sessionStorage.setItem(ssToken, JSON.stringify(authToken));
       sessionStorage.setItem(ssCurrentUser, JSON.stringify(currentUser));
 
@@ -112,11 +114,17 @@ export default function AuthProvider({ children, navigate, ...props }: AuthProvi
 
       if (!res?.data || res?.status !== 200) throw new Error(res?.message || "Error signing in");
 
-      const user = res.data?.user;
+      let user = res.data?.user;
       const authToken = res.data?.token;
       const message = "Logged In successfully";
 
       if (!user) throw new Error("Error signing in");
+
+      user = {
+        ...user,
+        role: res?.data?.role === "Admin" ? "admin" : "user",
+        access_level: res?.data?.access_level,
+      };
 
       setUserSession(user, authToken);
 
