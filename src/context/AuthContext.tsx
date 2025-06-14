@@ -86,21 +86,10 @@ export default function AuthProvider({ children, navigate, ...props }: AuthProvi
 
   const setUserSession = useCallback(
     (user: any, authToken: string): UserType => {
-      const currentUser = {
-        ...user,
-        userId: user.id,
-        full_name: `${user.first_name || "Unknown"} ${user.last_name}`,
-      };
-
-      setUser(currentUser);
-      setToken(authToken);
-
-      console.log("RESDATA", currentUser);
-
       sessionStorage.setItem(ssToken, JSON.stringify(authToken));
-      sessionStorage.setItem(ssCurrentUser, JSON.stringify(currentUser));
+      sessionStorage.setItem(ssCurrentUser, JSON.stringify(user));
 
-      return currentUser;
+      return user;
     },
     [setToken, setUser]
   );
@@ -124,6 +113,8 @@ export default function AuthProvider({ children, navigate, ...props }: AuthProvi
         ...user,
         role: res?.data?.role === "Admin" ? "admin" : "user",
         access_level: res?.data?.access_level,
+        userId: user?.id,
+        full_name: `${user.first_name || "Unknown"} ${user.last_name}`,
       };
 
       setUserSession(user, authToken);
