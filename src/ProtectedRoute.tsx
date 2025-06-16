@@ -8,8 +8,8 @@ function ProtectedRoute({ children }: PropsWithChildren) {
   const { user } = useAuth();
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const hasRedirected = useRef(false);
   const [isLoading, setIsLoading] = useState(true);
+  const hasRedirected = useRef(false);
   const prevUserVerified = useRef<boolean | null>(null);
 
   useEffect(() => {

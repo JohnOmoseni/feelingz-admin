@@ -1,4 +1,4 @@
-import { Route, Routes, Navigate } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import SignIn from "./app/(auth)/signin/page";
 import VerifyOTP from "./app/(auth)/verify-otp/page";
 import ForgotPassword from "./app/(auth)/forgot-password/page";
@@ -29,7 +29,6 @@ const AppRouter = () => {
       <ErrorBoundary>
         <Routes>
           <Route element={<LayoutProvider />}>
-            <Route path="/" element={<Navigate to={"/dashboard"} />} />
             <Route path="*" element={<NotFound />} />
 
             <Route
