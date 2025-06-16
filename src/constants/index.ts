@@ -1,5 +1,5 @@
 import { APP_ROLES } from "@/types";
-import { ContentIcon, Dashboard, Settings, User, UsersIcon } from "./icons";
+import { ContentIcon, Dashboard, User, UsersIcon } from "./icons";
 
 export const routes = {
   LOGIN: "/signin",
@@ -59,14 +59,14 @@ export const sidebarLinks = [
     icon: UsersIcon,
     allowedRoles: [APP_ROLES.Admin],
   },
-  {
-    label: "Settings",
-    href: "/settings",
-    tag: "settings",
-    icon: Settings,
-    allowedRoles: [APP_ROLES.Admin, APP_ROLES.User, APP_ROLES.Staff],
-    showAlways: true,
-  },
+  // {
+  //   label: "Settings",
+  //   href: "/settings",
+  //   tag: "settings",
+  //   icon: Settings,
+  //   allowedRoles: [APP_ROLES.Admin, APP_ROLES.User, APP_ROLES.Staff],
+  //   showAlways: true,
+  // },
 ];
 
 export const ssToken = "feelingz-admin-token";
