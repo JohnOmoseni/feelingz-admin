@@ -88,6 +88,7 @@ export default function Dropzone({ onFileChange }: Props) {
         ...style,
         flexDirection: "column",
         position: "relative",
+        whiteSpace: "pre-wrap",
       }}
       className="relative flex-1"
     >

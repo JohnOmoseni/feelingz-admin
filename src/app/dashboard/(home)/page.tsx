@@ -12,12 +12,12 @@ import useEmptyState from "@/hooks/useEmptyState";
 import CustomButton from "@/components/reuseables/CustomButton";
 import PostForm from "@/components/forms/contents/PostForm";
 
-const activity = [
-  {
-    label: "John @johnnyomoseni100@gmail.com",
-    icon: "",
-    desc: "just got activated by Admin Dania",
-  },
+const activity: { label: string; icon: string; desc: string }[] = [
+  // {
+  //   label: "John @johnnyomoseni100@gmail.com",
+  //   icon: "",
+  //   desc: "just got activated by Admin Dania",
+  // },
 ];
 
 function Dashboard() {
@@ -96,22 +96,28 @@ function Dashboard() {
             <div className="flex-column gap-6 card">
               <h3>Recent Activity</h3>
 
-              <ul className="flex-column gap-3">
-                {activity.map((item, idx) => (
-                  <li
-                    className="grid grid-cols-[min-content_1fr] gap-3 pb-2.5 pt-1 border-b border-border-100 last:border-0"
-                    key={idx}
-                  >
-                    <UserAvatar className="w-fit h-[30px]" />
-                    <div className="flex-column gap-1 w-full overflow-hidden">
-                      <p className="text-sm font-semibold line-clamp-2 w-full pr-1 truncate">
-                        {item.label}
-                      </p>
-                      <p className="text-xs text-grey">{item.desc}</p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
+              {activity?.length === 0 ? (
+                <div className="loader-container">
+                  <p className="text-base text-grey">No recent activity</p>
+                </div>
+              ) : (
+                <ul className="flex-column gap-3">
+                  {activity.map((item, idx) => (
+                    <li
+                      className="grid grid-cols-[min-content_1fr] gap-3 pb-2.5 pt-1 border-b border-border-100 last:border-0"
+                      key={idx}
+                    >
+                      <UserAvatar className="w-fit h-[30px]" />
+                      <div className="flex-column gap-1 w-full overflow-hidden">
+                        <p className="text-sm font-semibold line-clamp-2 w-full pr-1 truncate">
+                          {item.label}
+                        </p>
+                        <p className="text-xs text-grey">{item.desc}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
             <div className="flex-column gap-3 card ">
               <DonutUserChart data={overviewData?.user} />

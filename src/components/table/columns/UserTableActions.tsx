@@ -1,6 +1,6 @@
 import CustomButton from "@/components/reuseables/CustomButton";
 import { truncateString } from "@/lib";
-import { useMutateUser } from "@/server/actions/users/useUsers";
+import { useMutateUser, useNotifyUser } from "@/server/actions/users/useUsers";
 import { Link } from "react-router-dom";
 import { useMemo, useState } from "react";
 import dayjs from "dayjs";
@@ -9,6 +9,7 @@ export const UserTableAction = ({ userInfo }: { userInfo: UserResponse }) => {
   const { mutateAsync: mutateUser, isPending } = useMutateUser();
 
   const [activeAction, setActiveAction] = useState<MutateUserActionType | null>(null);
+  const { mutateAsync: notifyUser, isPending: isNotifying } = useNotifyUser();
 
   const fullName = `${userInfo?.first_name || "Unknown"} ${userInfo?.last_name || ""}`.trim();
   const location =
@@ -21,8 +22,12 @@ export const UserTableAction = ({ userInfo }: { userInfo: UserResponse }) => {
         value: userInfo?.dob ? dayjs().diff(dayjs(userInfo.dob), "year") : "N/A",
       },
       {
-        label: "Education",
-        value: userInfo?.education || "N/A",
+        label: "Faith",
+        value: userInfo?.faith ?? "N/A",
+      },
+      {
+        label: "Occupation",
+        value: userInfo?.occupation ?? "N/A",
       },
       {
         label: "Location",
@@ -48,6 +53,17 @@ export const UserTableAction = ({ userInfo }: { userInfo: UserResponse }) => {
     }
   };
 
+  const onNotifyUser = async (userInfo: UserResponse) => {
+    const data = {
+      user_id: userInfo.id,
+      email: userInfo.email,
+    };
+
+    try {
+      await notifyUser(data);
+    } catch (err: any) {}
+  };
+
   const isSuspended = userInfo.status === "suspended";
   const isApproved = userInfo.status === "active";
 
@@ -56,23 +72,33 @@ export const UserTableAction = ({ userInfo }: { userInfo: UserResponse }) => {
       <h3 className="">{fullName}</h3>
       <p className="truncate">{userInfo.email ? truncateString(userInfo.email, 40) : "N/A"}</p>
 
-      <div className="flex-column gap-1 my-3">
+      <div className="flex-column  gap-3.5 my-3">
         {info.map((item, idx) => (
           <div key={idx} className="row-flex-start gap-3 text-sm">
-            <span className="min-w-[8ch]">{item.label}:</span>
+            <span className="min-w-[5ch]">{item.label}:</span>
             <span className="">{item.value}</span>
           </div>
         ))}
       </div>
 
-      <div className="row-flex-start gap-3">
+      <div className="grid grid-cols-2 gap-3">
         <Link to={`/users/${userInfo.id}`}>
-          <CustomButton title="View" variant="badge" className="bg-secondary-100" size={"badge"} />
+          <CustomButton title="View" variant="badge" size="badge" />
         </Link>
+        <CustomButton
+          title={"Notify"}
+          variant="badge"
+          size="badge"
+          className="bg-accent"
+          onClick={() => onNotifyUser(userInfo)}
+          disabled={isNotifying}
+          isLoading={isNotifying}
+        />
         <CustomButton
           title={isApproved ? "Un-Approve" : "Approve"}
           variant="badge"
           size="badge"
+          className="bg-green-500"
           onClick={() => onMutateUser(userInfo, isApproved ? "Un-Approve" : "Approve")}
           disabled={isPending && activeAction === (isApproved ? "Un-Approve" : "Approve")}
           isLoading={isPending && activeAction === (isApproved ? "Un-Approve" : "Approve")}

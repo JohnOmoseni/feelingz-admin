@@ -12,7 +12,7 @@ const buttonVariants = cva(
           "border-border-variant w-max bg-secondary-100 text-secondary-foreground disabled:bg-grey-200",
         outline: "border-border-100 text-foreground",
         accent: "border-accent bg-current text-secondary-foreground",
-        badge: "bg-accent text-secondary-foreground w-max",
+        badge: "bg-accent min-w-[90px] text-secondary-foreground w-max",
       },
       size: {
         default: "sm:h-10 px-4 max-sm:py-2 py-3",

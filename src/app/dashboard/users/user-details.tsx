@@ -116,9 +116,6 @@ function UserDetails() {
           location,
           zodiac: user?.zodiac || "N/A",
           occupation: user?.occupation || "N/A",
-          height: user?.height || "N/A",
-          size: user?.size || "N/A",
-          level_of_education: user?.education || "N/A",
           faith: user?.faith || "N/A",
         },
       },
@@ -126,9 +123,7 @@ function UserDetails() {
         preferences: {
           size: user?.size || "N/A",
           zodiac: user?.zodiac || "N/A",
-          level_of_education: user?.education || "N/A",
           age_range: user?.age_range || "N/A",
-          height: user?.height || "N/A",
           location,
           faith: user?.faith || "N/A",
         },
@@ -226,7 +221,7 @@ function UserDetails() {
           <div className="pt-4 flex-column gap-6 border-t border-border-100 flex-column">
             <h3 className="text-lg">Profile Details</h3>
 
-            <ul className="max-[500px]:flex-column grid grid-cols-2 grid-rows-5 gap-y-4 gap-x-12">
+            <ul className="max-[500px]:flex-column grid grid-cols-2 grid-rows-3 gap-y-4 gap-x-12">
               {Object.entries(details[0]?.profile_details || []).map(([key, value], idx) => {
                 return (
                   <li key={idx} className="w-full row-flex-start gap-2 text-base">
@@ -243,7 +238,7 @@ function UserDetails() {
           <div className="pt-4 flex-column gap-6 border-t border-border-100 flex-column">
             <h3 className="text-lg">Preferences</h3>
 
-            <ul className="max-[500px]:flex-column grid grid-cols-2 grid-rows-4 gap-y-4 gap-x-12">
+            <ul className="max-[500px]:flex-column grid grid-cols-2 grid-rows-3 gap-y-4 gap-x-12">
               {Object.entries(details[1]?.preferences || []).map(([key, value], idx) => {
                 return (
                   <li key={idx} className="w-full row-flex-start gap-2 text-base">
