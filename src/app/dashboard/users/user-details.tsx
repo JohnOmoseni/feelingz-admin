@@ -93,7 +93,7 @@ function UserDetails() {
       education: user?.faith || "",
       faith: user?.faith || "",
       bio: user?.bio || "",
-      profile_pic: user?.profile_pic || fallback_profile,
+      profile_pic: user?.avatar || fallback_profile,
       selfie: user?.selfie || fallback_profile,
       images: [],
       created_at: user?.created_at ? dayjs(user.created_at).format("[Created] ddd, MMMM YYYY") : "",

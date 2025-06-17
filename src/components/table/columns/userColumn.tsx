@@ -9,7 +9,7 @@ export const usersColumn: ColumnDef<UserResponse>[] = [
     id: "profile_pic",
     cell: ({ row }) => {
       const userInfo = row.original;
-      const profile_pic = userInfo?.cover_pic;
+      const profile_pic = userInfo?.avatar;
       const selfie_pic = userInfo?.selfie;
       return (
         <div className="grid grid-cols-[1fr_1fr] w-full gap-4">
