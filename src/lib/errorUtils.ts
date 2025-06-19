@@ -47,5 +47,5 @@ export function extractErrorMessage(error: any, fallback: string = "An error occ
   }
 
   // Fallback to error.message or generic message
-  return error.message || fallback;
+  return responseData.message || fallback;
 }
