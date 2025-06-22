@@ -81,7 +81,7 @@ export const UserTableAction = ({ userInfo }: { userInfo: UserResponse }) => {
         ))}
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-3 w-full">
         <Link to={`/users/${userInfo.id}`}>
           <CustomButton title="View" variant="badge" size="badge" />
         </Link>
