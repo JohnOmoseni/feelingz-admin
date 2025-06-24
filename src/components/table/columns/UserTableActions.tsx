@@ -68,7 +68,7 @@ export const UserTableAction = ({ userInfo }: { userInfo: UserResponse }) => {
   const isApproved = userInfo.status === "active";
 
   return (
-    <div className="flex-column gap-2">
+    <div className="flex-column gap-2 w-full">
       <h3 className="">{fullName}</h3>
       <p className="truncate">{userInfo.email ? truncateString(userInfo.email, 40) : "N/A"}</p>
 
@@ -81,7 +81,7 @@ export const UserTableAction = ({ userInfo }: { userInfo: UserResponse }) => {
         ))}
       </div>
 
-      <div className="grid grid-cols-2 gap-3 w-full">
+      <div className="grid grid-cols-[repeat(2,_minmax(min-content,_1fr))] gap-3">
         <Link to={`/users/${userInfo.id}`}>
           <CustomButton title="View" variant="badge" size="badge" />
         </Link>
