@@ -113,7 +113,7 @@ export const AddStaffSchema = yup.object().shape({
     .mixed()
     .oneOf(
       accessLevels?.map?.((level) => level.value),
-      "Access Level must be either 'All Access', 'Read Only', or 'Read and Review'"
+      "Access Level must be either 'All Access', 'Read Only', 'Read and Review' or `Read and Post Only`"
     )
     .required("Field is required"),
   password: yup

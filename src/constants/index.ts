@@ -27,6 +27,10 @@ export const accessLevels = [
     value: "Read Only",
     label: "Read Only",
   },
+  {
+    value: "Read and Post Only",
+    label: "Read and Post Only",
+  },
 ];
 
 export const sidebarLinks = [
