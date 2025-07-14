@@ -52,13 +52,14 @@ export default function AuthProvider({ children, navigate, ...props }: AuthProvi
           console.error("Token parsing error:", parseError);
           throw new Error("Invalid session token");
         }
+        // @ts-ignore
         const currentUser = setUserSession(res.data, parsedToken);
 
-        if (!currentUser.is_verified) {
-          navigate("/verify-otp");
-        } else {
-          navigate("/");
-        }
+        navigate("/");
+        // if (!currentUser.is_verified) {
+        //   navigate("/verify-otp");
+        // } else {
+        // }
       } catch (error: any) {
         const storedUser = sessionStorage.getItem(ssCurrentUser);
         const token = sessionStorage.getItem(ssToken);

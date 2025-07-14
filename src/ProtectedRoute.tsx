@@ -2,12 +2,11 @@ import FallbackLoader from "@/components/fallback/FallbackLoader";
 import { routes } from "@/constants";
 import { useAuth } from "@/context/AuthContext";
 import { PropsWithChildren, useEffect, useRef, useState } from "react";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 
 function ProtectedRoute({ children }: PropsWithChildren) {
   const { user } = useAuth();
   const { pathname } = useLocation();
-  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const hasRedirected = useRef(false);
   const prevUserVerified = useRef<boolean | null>(null);
@@ -24,11 +23,11 @@ function ProtectedRoute({ children }: PropsWithChildren) {
     // Skip if already redirected in this cycle
     if (hasRedirected.current) return;
 
-    if (user && !user.is_verified) {
-      hasRedirected.current = true;
-      navigate(routes.VERIFY_OTP, { replace: true });
-      return;
-    }
+    // if (user && !user.is_verified) {
+    //   hasRedirected.current = true;
+    //   navigate(routes.VERIFY_OTP, { replace: true });
+    //   return;
+    // }
 
     setIsLoading(false);
 

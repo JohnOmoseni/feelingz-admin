@@ -8,6 +8,7 @@ import FormWrapper from "@/components/forms/FormWrapper";
 import CustomButton from "@/components/reuseables/CustomButton";
 import Dropzone from "../Dropzone";
 import FallbackLoader from "@/components/fallback/FallbackLoader";
+import TextEditor from "./TextEditor";
 
 type PostFormProps = {
   type?: "create" | "edit";
@@ -167,6 +168,20 @@ const PostForm = ({ type = "create", article, closeModal }: PostFormProps) => {
           field={{
             value: values.content,
           }}
+        />
+
+        <CustomFormField
+          fieldType={FormFieldType.SKELETON}
+          name="content"
+          label="Full Post Content"
+          renderSkeleton={() => (
+            <TextEditor
+              value={values.content}
+              onChange={(content: string) => {
+                setFieldValue("content", content);
+              }}
+            />
+          )}
         />
 
         <CustomFormField
