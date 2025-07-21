@@ -1,3 +1,4 @@
+import { extractErrorMessage } from "@/lib/errorUtils";
 import { showToast } from "@/lib/utils";
 import { userApi } from "@/server/actions/users";
 import { useMutation, UseMutationResult, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -41,9 +42,8 @@ export const useMutateUser = (): UseMutationResult<any, any, MutateUserParams> =
   return useMutation({
     mutationFn: (data: MutateUserParams) => userApi.mutateUser(data),
     onError: (error, variables) => {
-      const message = error?.message || `Failed to ${variables.type.toLowerCase()} user`;
+      const message = extractErrorMessage(error, `Failed to ${variables.type.toLowerCase()} user`);
       showToast("error", message);
-      console.error("Mutation Error:", error);
     },
     onSuccess: (data, variables) => {
       const message = data?.message || `${variables.type} action completed successfully`;
@@ -65,9 +65,8 @@ export const useNotifyUser = (): UseMutationResult<
   return useMutation({
     mutationFn: ({ email }: { email: string; user_id: string }) => userApi.notifyUser({ email }),
     onError: (error) => {
-      const message = error?.message || "";
+      const message = extractErrorMessage(error, "Failed to notify user");
       showToast("error", message);
-      console.error("Notify Error:", error);
     },
     onSuccess: (data, variables) => {
       const message = data?.message || "";
@@ -85,7 +84,10 @@ export const useDeleteUser = (): UseMutationResult<any, unknown, string> => {
 
   return useMutation({
     mutationFn: (user_id: string) => userApi.deleteUser(user_id),
-    onError: (error) => console.error("[Delete User Error]", error),
+    onError: (error) => {
+      const message = extractErrorMessage(error, "Failed to delete user");
+      showToast("error", message);
+    },
     onSuccess: (data) => {
       const message = data?.message || "User deleted successfully";
       showToast("success", message);

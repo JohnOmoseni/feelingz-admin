@@ -41,8 +41,8 @@ export const useCreateArticle = () => {
   return useMutation({
     mutationFn: (data: FormData) => postsApi.createArticle(data),
     onError: (error) => {
-      const message = error?.message || `Error creating article`;
-      console.error("[Create Article error]", error, message);
+      const message = extractErrorMessage(error, "Error creating article");
+      showToast("error", message);
     },
     onSuccess: (data) => {
       const message = data?.message || "";
@@ -83,7 +83,7 @@ export const useDeleteArticle = () => {
   return useMutation({
     mutationFn: ({ article_id }: { article_id: string }) => postsApi.deleteArticle({ article_id }),
     onError: (error) => {
-      const message = error?.message || "Something went wrong";
+      const message = error?.message || `Failed to delete article`;
       showToast("error", message);
     },
     onSuccess: (data) => {

@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { staffApi } from "@/server/actions/staffs";
 import { useMutation, UseMutationResult, useQueryClient } from "@tanstack/react-query";
 import { showToast } from "@/lib/utils";
+import { extractErrorMessage } from "@/lib/errorUtils";
 
 // STAFFS ----------------------------------------------------------------
 export const useGetAllStaff = () => {
@@ -59,8 +60,7 @@ export const useCreateAdmin = () => {
   return useMutation({
     mutationFn: (data: CreateAdminParams) => staffApi.createAdmin(data),
     onError: (error) => {
-      const message = error?.message || `Error creating admin`;
-      console.error("[Create Admin error]", error, message);
+      const message = extractErrorMessage(error, "Error creating admin");
       showToast("error", message);
       throw error;
     },
@@ -80,6 +80,7 @@ export const useUpdateAccess = () => {
     mutationFn: (data: UpdateAccessParams) => staffApi.updateAccessLevel(data),
     onError: (error) => {
       const message = error?.message || `Error updating access level`;
+
       showToast("error", message);
     },
     onSuccess: (data) => {

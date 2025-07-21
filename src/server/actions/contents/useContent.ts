@@ -58,8 +58,7 @@ export const useCreateChannel = () => {
   return useMutation({
     mutationFn: (data: MutateChannelParams) => contentApi.createChannel(data),
     onError: (error) => {
-      const message = error?.message || `Error creating channel`;
-      console.error("[Create Channel error]", error, message);
+      const message = extractErrorMessage(error, "Error creating channel");
       showToast("error", message);
     },
     onSuccess: (data) => {
@@ -81,6 +80,7 @@ export const useEditChannel = () => {
     onError: (error) => {
       const message = extractErrorMessage(error, "Failed to update channel");
       showToast("error", message);
+
       throw error;
     },
     onSuccess: (data) => {
@@ -100,7 +100,7 @@ export const useDeleteChannel = () => {
     mutationFn: ({ channel_id }: { channel_id: string }) =>
       contentApi.deleteChannel({ channel_id }),
     onError: (error) => {
-      const message = error?.message || "Something went wrong";
+      const message = extractErrorMessage(error, "Failed to delete channel");
       showToast("error", message);
     },
     onSuccess: (data) => {
