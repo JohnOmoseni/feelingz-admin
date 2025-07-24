@@ -1,5 +1,5 @@
 import { DataTable } from "@/components/table/DataTable";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useGetAllUsers } from "@/server/actions/users/useUsers";
 import { SlidingTabs } from "@/components/tabs/SlidingTabs";
 import { TabIDS } from "@/types";
@@ -22,6 +22,10 @@ const tabIDs: any = [
 function Users() {
   const [globalFilter, setGlobalFilter] = useState("");
   const [columnFilters, setColumnFilters] = useState([]);
+  const [pageIndex, setPageIndex] = useState(() => {
+    const savedPage = localStorage.getItem("usersPageIndex");
+    return savedPage ? parseInt(savedPage, 10) : 0;
+  });
 
   const { data: users, isError, error, isLoading: isFetchingUsers } = useGetAllUsers();
 
@@ -31,6 +35,10 @@ function Users() {
     error,
   });
 
+  useEffect(() => {
+    localStorage.setItem("usersPageIndex", pageIndex.toString());
+  }, [pageIndex]);
+
   const [activeTab, setActiveTab] = useState<TabIDS>("all");
 
   const changeTab = useCallback((value: TabIDS) => {
@@ -38,9 +46,14 @@ function Users() {
     setColumnFilters((prev: any) =>
       prev?.filter((filter: any) => filter.id !== "status")?.concat({ id: "status", value })
     );
+    setPageIndex(0);
   }, []);
 
-  const tableData = useMemo(() => users || [], [users]);
+  const tableData = useMemo(() => {
+    const usersArray = Array.isArray(users) ? users : [];
+    return usersArray;
+  }, [users]);
+  // const tableData = useMemo(() => [users, ...test_data], [users, test_data]);
 
   return (
     <>
@@ -63,6 +76,8 @@ function Users() {
             {...(isError || !tableData.length ? { emptyState } : {})}
             globalFilter={globalFilter}
             columnFilters={columnFilters}
+            pageIndex={pageIndex}
+            setPageIndex={setPageIndex}
           />
         </div>
       </SectionWrapper>

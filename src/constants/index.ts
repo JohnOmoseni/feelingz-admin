@@ -75,3 +75,37 @@ export const sidebarLinks = [
 
 export const ssToken = "feelingz-admin-token";
 export const ssCurrentUser = "feelingz-admin-currentUser";
+
+export const test_data = [
+  {
+    id: "4ce91870-bb95-46da-9a83-7e9dce30d733",
+    first_name: "David",
+    last_name: null,
+    email: "lawrenceazuadavid@gmail.com",
+    paid: false,
+    phone: null,
+    avatar: null,
+    cover_pic: null,
+    selfie: null,
+    bio: null,
+    dob: "1999-06-17",
+    gender: "male",
+    country: null,
+    state: null,
+    city: null,
+    zodiac: "Gemini",
+    faith: null,
+    height: null,
+    size: null,
+    education: null,
+    occupation: null,
+    role: "user",
+    social_id: null,
+    social_type: null,
+    status: "inactive",
+    is_verified: 1,
+    created_at: "2025-07-24T17:15:50.000000Z",
+    updated_at: "2025-07-24T17:16:21.000000Z",
+    google_id: null,
+  },
+];

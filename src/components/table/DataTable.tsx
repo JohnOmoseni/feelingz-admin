@@ -24,6 +24,8 @@ interface DataTableProps<TData, TValue> {
   hidePageCountDropdown?: boolean;
   emptyState?: ReactNode;
   isLoading?: boolean;
+  pageIndex?: number;
+  setPageIndex?: (pageIndex: number) => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -34,6 +36,8 @@ export function DataTable<TData, TValue>({
   setSelectedRows,
   emptyState,
   isLoading,
+  pageIndex = 4,
+  setPageIndex,
 }: DataTableProps<TData, TValue>) {
   const [data, setData] = useState(tableData);
   const [sorting, setSorting] = useState<ColumnSort[]>([]);
@@ -51,6 +55,10 @@ export function DataTable<TData, TValue>({
       columnFilters,
       rowSelection,
       globalFilter,
+      pagination: {
+        pageIndex,
+        pageSize: 10,
+      },
     },
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -58,12 +66,24 @@ export function DataTable<TData, TValue>({
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
     onRowSelectionChange: setRowSelection,
+    onPaginationChange: (updater) => {
+      const newState =
+        typeof updater === "function"
+          ? updater({ pageIndex, pageSize: table.getState().pagination.pageSize })
+          : updater;
+      setPageIndex?.(newState.pageIndex); // Update parent state
+    },
+    autoResetPageIndex: false,
   });
 
   useEffect(() => {
     const selectedRows = table.getSelectedRowModel().rows.map((row) => row.original);
     setSelectedRows && setSelectedRows(selectedRows);
   }, [table.getSelectedRowModel().rows, setSelectedRows]);
+
+  useEffect(() => {
+    table.setPageIndex(pageIndex);
+  }, [pageIndex, table]);
 
   return (
     <div className="flex-column gap-4">
